@@ -1,167 +1,129 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import bcrypt from "bcrypt";
+import {
+	PRODUCT_DATA,
+	USER_DATA,
+	ORDER_DATA,
+	ORDER_DETAIL_DATA,
+} from "./constants.js";
+import prisma, {
+	createProduct,
+	createUser,
+	createOrder,
+	createOrderDetail,
+} from "./index.js";
 
-const IMG_URL =
-  "https://www.shutterstock.com/image-illustration/no-picture-available-placeholder-thumbnail-600nw-2179364083.jpg";
+async function dropTables() {
+	try {
+		console.log("Attempting to drop tables...");
 
-const letters = [
-  "a",
-  "b",
-  "c",
-  "d",
-  "e",
-  "f",
-  "g",
-  "h",
-  "i",
-  "j",
-  "k",
-  "l",
-  "m",
-  "n",
-  "o",
-  "p",
-  "q",
-  "r",
-  "s",
-  "t",
-  "u",
-  "v",
-  "w",
-  "x",
-  "y",
-  "z",
-];
+		// have to make sure to drop tables in correct order to avoid foreign key constraints
+		await prisma.orderDetail.deleteMany();
+		await prisma.orders.deleteMany();
+		await prisma.products.deleteMany();
+		await prisma.users.deleteMany();
 
-const orderDetails = [
-  {
-    orderId: 1,
-    productId: 2,
-    quantity: 2,
-  },
-  {
-    orderId: 1,
-    productId: 4,
-    quantity: 3,
-  },
-  {
-    orderId: 1,
-    productId: 12,
-    quantity: 5,
-  },
-  {
-    orderId: 2,
-    productId: 2,
-    quantity: 1,
-  },
-  {
-    orderId: 2,
-    productId: 20,
-    quantity: 3,
-  },
-  {
-    orderId: 3,
-    productId: 1,
-    quantity: 5,
-  },
-  {
-    orderId: 3,
-    productId: 18,
-    quantity: 3,
-  },
-  {
-    orderId: 4,
-    productId: 18,
-    quantity: 1,
-  },
-];
+		// need to do this in order to stop the sequence from continuing to increment
+		// and causing a primary key violation when we try to insert/update/delete records from the tables
+		await prisma.$executeRaw`ALTER SEQUENCE "orders_id_seq" RESTART WITH 1`;
+		await prisma.$executeRaw`ALTER SEQUENCE "products_id_seq" RESTART WITH 1`;
+		await prisma.$executeRaw`ALTER SEQUENCE "users_id_seq" RESTART WITH 1`;
 
-async function buildProducts() {
-  try {
-    console.log("building products table... ");
-    for (let i = 0; i < 26; i++) {
-      await prisma.product.create({
-        data: {
-          name: `product ${letters[i]}`,
-          description: `product ${letters[i]} is rare and cool.`,
-          image: IMG_URL,
-          count: 100,
-          price: 50,
-        },
-      });
-    }
-    console.log("done building products table");
-  } catch (error) {
-    console.error(error);
-  }
+		console.log("Finished dropping tables!");
+	} catch (error) {
+		console.error("Error dropping tables!");
+		throw error;
+	}
 }
 
-async function buildUsers() {
-  try {
-    console.log("building users table for customers...");
-    for (let i = 0; i < 10; i++) {
-      await prisma.user.create({
-        data: {
-          firstName: "first" + letters[i],
-          lastName: "last" + letters[i],
-          username: "user" + letters[i],
-          password: "password",
-          type: "customer",
-        },
-      });
-    }
-    console.log("done building users table for customers");
-    console.log("building users table for admin...");
-    await prisma.user.create({
-      data: {
-        firstName: "first" + letters[25],
-        lastName: "last" + letters[25],
-        username: "user" + letters[25],
-        password: "password",
-        type: "admin",
-      },
-    });
-    console.log("done building users table for admin");
-  } catch (error) {
-    console.error(error);
-  }
+async function createInitialProducts() {
+	try {
+		console.log("Attempting to create initial products...");
+
+		const products = await Promise.all(
+			PRODUCT_DATA.map((product) => createProduct(product))
+		);
+
+		console.log("Finished creating products!");
+		console.log("Products: ", products);
+	} catch (error) {
+		console.log("Error creating products!");
+		throw error;
+	}
 }
 
-async function buildOrders() {
-  try {
-    console.log("building order table...");
-    for (let i = 0; i < 4; i++) {
-      await prisma.order.create({
-        data: {
-          user: { connect: { id: i + 1 } },
-        },
-      });
-    }
-    console.log("done building order table");
-  } catch (error) {
-    console.error(error);
-  }
+async function createInitialUsers() {
+	try {
+		console.log("Attempting To Create Initial Users...");
+		const hashedPassword = await bcrypt.hash("password", 10);
+
+		// create 5 users
+		const users = await Promise.all(
+			USER_DATA.map((user) =>
+				createUser({
+					firstname: user.firstname,
+					lastname: user.lastname,
+					username: user.username,
+					password: hashedPassword,
+					type: user.type,
+				})
+			)
+		);
+
+		console.log("Finished creating users!");
+		console.log("Users: ", users);
+	} catch (error) {
+		console.error("Error creating users!");
+		throw error;
+	}
 }
 
-async function buildOrderDetails() {
-  try {
-    console.log("building order detail table...");
-    await prisma.orderDetail.createMany({
-      data: orderDetails,
-    });
-    console.log("done building order detail table");
-  } catch (error) {
-    console.error(error);
-  }
+async function createInitialOrders() {
+	try {
+		console.log("Attempting to create initial orders...");
+
+		const orders = await Promise.all(
+			ORDER_DATA.map((order) => createOrder(order))
+		);
+
+		console.log("Finished creating order!");
+		console.log("Orders: ", orders);
+	} catch (error) {
+		console.log("Error creating order!");
+		throw error;
+	}
 }
 
-async function buildDB() {
-  console.log("starting to build DB...");
-  await buildProducts();
-  await buildUsers();
-  await buildOrders();
-  await buildOrderDetails();
-  console.log("done building DB");
+async function createInitialOrderDetails() {
+	try {
+		console.log("Attempting to create initial order details...");
+
+		const orderDetails = await Promise.all(
+			ORDER_DETAIL_DATA.map((orderDetail) =>
+				createOrderDetail(orderDetail)
+			)
+		);
+
+		console.log("Finished creating order details!");
+		console.log("Order Details: ", orderDetails);
+	} catch (error) {
+		console.log("Error creating order details!");
+		throw error;
+	}
 }
 
-buildDB();
+async function rebuildDB() {
+	try {
+		await dropTables();
+		await createInitialProducts();
+		await createInitialUsers();
+		await createInitialOrders();
+		await createInitialOrderDetails();
+	} catch (error) {
+		console.log("Error during rebuildDB");
+		throw error;
+	} finally {
+		await prisma.$disconnect();
+	}
+}
+
+rebuildDB();
