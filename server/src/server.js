@@ -13,5 +13,5 @@ app.use("/product", productRouter);
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-	console.log(`Listening on port ${PORT}...`);
+	console.log(`Server Up Listening On Port ${PORT}...`);
 });

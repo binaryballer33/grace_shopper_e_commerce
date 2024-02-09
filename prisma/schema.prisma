@@ -10,43 +10,52 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model users {
   id        Int      @id @default(autoincrement())
-  firstName String
-  lastName  String
-  username  String   @unique
-  password  String
-  type      UserType
-  orders    Order[]
+  firstname String   @db.VarChar(255)
+  lastname  String   @db.VarChar(255)
+  username  String   @unique @db.VarChar(255)
+  password  String   @db.VarChar(255)
+  type      userType
+  orders    orders[]
 }
 
-enum UserType {
+enum userType {
   admin
   customer
 }
 
-model Product {
-  id          Int           @id @default(autoincrement())
-  name        String
-  description String
-  image       String
-  count       Int
-  price       Int
-  OrderDetail OrderDetail[]
+model products {
+  id              Int               @id @default(autoincrement())
+  name            String            @db.VarChar(255)
+  description     String            @db.VarChar(255)
+  image           String            @db.VarChar(255)
+  count           Int
+  price           Int
+  productsInOrder productsInOrder[]
 }
 
-model Order {
-  id           Int           @id @default(autoincrement())
-  userId       Int
-  user         User          @relation(fields: [userId], references: [id])
-  orderDetails OrderDetail[]
+model orders {
+  id              Int               @id @default(autoincrement())
+  userId          Int
+  users           users             @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  createdAt       DateTime          @default(now())
+  status          orderStatus
+  productsInOrder productsInOrder[]
+  total           Float
 }
 
-model OrderDetail {
+enum orderStatus {
+  fulfilled
+  inCart
+  cancelled
+}
+
+model productsInOrder {
   orderId   Int
-  order     Order   @relation(fields: [orderId], references: [id])
+  orders    orders   @relation(fields: [orderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   productId Int
-  product   Product @relation(fields: [productId], references: [id])
+  products  products @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   quantity  Int
 
   @@id([orderId, productId])
