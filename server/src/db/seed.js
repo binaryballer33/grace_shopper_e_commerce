@@ -1,96 +1,101 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
+import pkg from "pg";
+import {
+  fruit_descriptions,
+  fruits,
+  IMG_URL,
+  fnames,
+  lnames,
+  orderDetails,
+} from "./index.js";
+const { Client } = pkg;
+const client = new Client({
+  connectionString:
+    process.env.DATABASE_URL ||
+    "postgresql://andrewlin1368:@localhost:5432/ecommerce",
+  ssl:
+    process.env.NODE_ENV === "production"
+      ? { rejectUnauthorized: false }
+      : undefined,
+});
 
-const IMG_URL =
-  "https://www.shutterstock.com/image-illustration/no-picture-available-placeholder-thumbnail-600nw-2179364083.jpg";
+async function resetDB() {
+  try {
+    console.log("dropping tables...");
+    await client.query(
+      `
+      DROP TABLE IF EXISTS orderdetail;
+      DROP TABLE IF EXISTS orders;
+      DROP TABLE IF EXISTS products;
+      DROP TABLE IF EXISTS users;
+      DROP TYPE IF EXISTS status
+      `
+    );
+    console.log("done dropping tables\n");
+  } catch (error) {
+    console.error(error);
+  }
+}
 
-const letters = [
-  "a",
-  "b",
-  "c",
-  "d",
-  "e",
-  "f",
-  "g",
-  "h",
-  "i",
-  "j",
-  "k",
-  "l",
-  "m",
-  "n",
-  "o",
-  "p",
-  "q",
-  "r",
-  "s",
-  "t",
-  "u",
-  "v",
-  "w",
-  "x",
-  "y",
-  "z",
-];
-
-const orderDetails = [
-  {
-    orderId: 1,
-    productId: 2,
-    quantity: 2,
-  },
-  {
-    orderId: 1,
-    productId: 4,
-    quantity: 3,
-  },
-  {
-    orderId: 1,
-    productId: 12,
-    quantity: 5,
-  },
-  {
-    orderId: 2,
-    productId: 2,
-    quantity: 1,
-  },
-  {
-    orderId: 2,
-    productId: 20,
-    quantity: 3,
-  },
-  {
-    orderId: 3,
-    productId: 1,
-    quantity: 5,
-  },
-  {
-    orderId: 3,
-    productId: 18,
-    quantity: 3,
-  },
-  {
-    orderId: 4,
-    productId: 18,
-    quantity: 1,
-  },
-];
+async function recreateDB() {
+  try {
+    console.log("recreating db structures...");
+    await client.query(
+      `
+    CREATE TYPE status AS ENUM (
+      'ADMIN',
+      'CUSTOMER'
+    ); 
+    CREATE TABLE users (
+      id SERIAL PRIMARY KEY,
+      firstName varchar(255) NOT NULL,
+      lastName varchar(255) NOT NULL,
+      username varchar(255) UNIQUE NOT NULL,
+      password varchar(255) NOT NULL,
+      type status 
+    );
+    CREATE TABLE products (
+      id SERIAL PRIMARY KEY,
+      name varchar(255) NOT NULL,
+      description varchar(255) NOT NULL,
+      image varchar(255) NOT NULL,
+      count INTEGER NOT NULL,
+      price INTEGER NOT NULL
+    );
+    CREATE TABLE orders (
+      id  SERIAL PRIMARY KEY,
+      userId INTEGER REFERENCES users(id)
+    );
+    CREATE TABLE orderdetail (
+      id SERIAL PRIMARY KEY,
+      orderId INTEGER REFERENCES orders(id),
+      productID INTEGER REFERENCES products(id),
+      quantity INTEGER NOT NULL
+    );
+    `
+    );
+    console.log("done recreating db structures\n");
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 async function buildProducts() {
   try {
     console.log("building products table... ");
-    for (let i = 0; i < 26; i++) {
-      await prisma.product.create({
+    for (let i = 0; i < 48; i++) {
+      await prisma.products.create({
         data: {
-          name: `product ${letters[i]}`,
-          description: `product ${letters[i]} is rare and cool.`,
+          name: fruits[i],
+          description: fruit_descriptions[i],
           image: IMG_URL,
-          count: 100,
-          price: 50,
+          count: 80 - i,
+          price: 20 + i,
         },
       });
     }
-    console.log("done building products table");
+    console.log("done building products table\n");
   } catch (error) {
     console.error(error);
   }
@@ -99,29 +104,29 @@ async function buildProducts() {
 async function buildUsers() {
   try {
     console.log("building users table for customers...");
-    for (let i = 0; i < 10; i++) {
-      await prisma.user.create({
+    for (let i = 0; i < 5; i++) {
+      await prisma.users.create({
         data: {
-          firstName: "first" + letters[i],
-          lastName: "last" + letters[i],
-          username: "user" + letters[i],
+          firstname: fnames[i],
+          lastname: lnames[i],
+          username: fnames[i] + lnames[i] + i,
           password: "password",
-          type: "customer",
+          type: "CUSTOMER",
         },
       });
     }
-    console.log("done building users table for customers");
+    console.log("done building users table for customers\n");
     console.log("building users table for admin...");
-    await prisma.user.create({
+    await prisma.users.create({
       data: {
-        firstName: "first" + letters[25],
-        lastName: "last" + letters[25],
-        username: "user" + letters[25],
+        firstname: fnames[5],
+        lastname: lnames[5],
+        username: fnames[5] + lnames[5] + 5,
         password: "password",
-        type: "admin",
+        type: "ADMIN",
       },
     });
-    console.log("done building users table for admin");
+    console.log("done building users table for admin\n");
   } catch (error) {
     console.error(error);
   }
@@ -131,13 +136,13 @@ async function buildOrders() {
   try {
     console.log("building order table...");
     for (let i = 0; i < 4; i++) {
-      await prisma.order.create({
+      await prisma.orders.create({
         data: {
-          user: { connect: { id: i + 1 } },
+          users: { connect: { id: i + 1 } },
         },
       });
     }
-    console.log("done building order table");
+    console.log("done building order table\n");
   } catch (error) {
     console.error(error);
   }
@@ -146,22 +151,32 @@ async function buildOrders() {
 async function buildOrderDetails() {
   try {
     console.log("building order detail table...");
-    await prisma.orderDetail.createMany({
+    await prisma.orderdetail.createMany({
       data: orderDetails,
     });
-    console.log("done building order detail table");
+    console.log("done building order detail table\n");
   } catch (error) {
     console.error(error);
   }
 }
 
-async function buildDB() {
-  console.log("starting to build DB...");
-  await buildProducts();
-  await buildUsers();
-  await buildOrders();
-  await buildOrderDetails();
-  console.log("done building DB");
+async function seed() {
+  console.log(
+    "if first time cloning project exit and run 'npx prisma migrate dev'..."
+  );
+
+  setTimeout(async () => {
+    client.connect();
+    console.log("db connection open...\n");
+    await resetDB();
+    await recreateDB();
+    await buildProducts();
+    await buildUsers();
+    await buildOrders();
+    await buildOrderDetails();
+    client.end();
+    console.log("db closed");
+  }, 10000);
 }
 
-buildDB();
+seed();
