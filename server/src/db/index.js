@@ -48,14 +48,13 @@ export async function createUser(user) {
 }
 
 export async function createOrder(order) {
-	const { userId, total, status, createdAt } = order;
+	const { userId, total, status } = order;
 	try {
 		const order = await prisma.orders.create({
 			data: {
 				userId,
 				total,
 				status,
-				createdAt,
 			},
 		});
 		return order;
@@ -64,19 +63,19 @@ export async function createOrder(order) {
 	}
 }
 
-export async function createOrderDetail(orderDetail) {
-	const { orderId, productId, quantity } = orderDetail;
+export async function createProductInOrder(productInOrder) {
+	const { orderId, productId, quantity } = productInOrder;
 	try {
-		const orderDetail = await prisma.orderDetail.create({
+		const productOrder = await prisma.productsInOrder.create({
 			data: {
 				orderId,
 				productId,
 				quantity,
 			},
 		});
-		return orderDetail;
+		return productOrder;
 	} catch (error) {
-		console.error("Error creating order detail: ", error);
+		console.error("Error creating product in order: ", error);
 	}
 }
 

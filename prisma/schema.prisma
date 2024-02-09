@@ -26,31 +26,32 @@ enum userType {
 }
 
 model products {
-  id          Int           @id @default(autoincrement())
-  name        String        @db.VarChar(255)
-  description String        @db.VarChar(255)
-  image       String        @db.VarChar(255)
-  count       Int
-  price       Int
-  orderDetail orderDetail[]
+  id              Int               @id @default(autoincrement())
+  name            String            @db.VarChar(255)
+  description     String            @db.VarChar(255)
+  image           String            @db.VarChar(255)
+  count           Int
+  price           Int
+  productsInOrder productsInOrder[]
 }
 
 model orders {
-  id           Int           @id @default(autoincrement())
-  userId       Int
-  users        users         @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  orderDetails orderDetail[]
-  total        Float
-  status       orderStatus
-  createdAt    DateTime      @default(now())
+  id              Int               @id @default(autoincrement())
+  userId          Int
+  users           users             @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  createdAt       DateTime          @default(now())
+  status          orderStatus
+  productsInOrder productsInOrder[]
+  total           Float
 }
 
 enum orderStatus {
   fulfilled
+  inCart
   cancelled
 }
 
-model orderDetail {
+model productsInOrder {
   orderId   Int
   orders    orders   @relation(fields: [orderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   productId Int

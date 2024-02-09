@@ -3,13 +3,13 @@ import {
 	PRODUCT_DATA,
 	USER_DATA,
 	ORDER_DATA,
-	ORDER_DETAIL_DATA,
+	PRODUCTS_IN_ORDER,
 } from "./constants.js";
 import prisma, {
 	createProduct,
 	createUser,
 	createOrder,
-	createOrderDetail,
+	createProductInOrder,
 } from "./index.js";
 
 async function dropTables() {
@@ -17,7 +17,7 @@ async function dropTables() {
 		console.log("Attempting to drop tables...");
 
 		// have to make sure to drop tables in correct order to avoid foreign key constraints
-		await prisma.orderDetail.deleteMany();
+		await prisma.productsInOrder.deleteMany();
 		await prisma.orders.deleteMany();
 		await prisma.products.deleteMany();
 		await prisma.users.deleteMany();
@@ -93,20 +93,20 @@ async function createInitialOrders() {
 	}
 }
 
-async function createInitialOrderDetails() {
+async function createInitialProductsInOrder() {
 	try {
-		console.log("Attempting to create initial order details...");
+		console.log("Attempting to create initial products in the orders...");
 
-		const orderDetails = await Promise.all(
-			ORDER_DETAIL_DATA.map((orderDetail) =>
-				createOrderDetail(orderDetail)
+		const productsInOrder = await Promise.all(
+			PRODUCTS_IN_ORDER.map((productInOrder) =>
+				createProductInOrder(productInOrder)
 			)
 		);
 
-		console.log("Finished creating order details!");
-		console.log("Order Details: ", orderDetails);
+		console.log("Finished creating products in the orders!");
+		console.log(" Products In Orders: ", productsInOrder);
 	} catch (error) {
-		console.log("Error creating order details!");
+		console.log("Error creating products in the orders!");
 		throw error;
 	}
 }
@@ -117,7 +117,7 @@ async function rebuildDB() {
 		await createInitialProducts();
 		await createInitialUsers();
 		await createInitialOrders();
-		await createInitialOrderDetails();
+		await createInitialProductsInOrder();
 	} catch (error) {
 		console.log("Error during rebuildDB");
 		throw error;
