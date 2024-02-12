@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
+// instantiate the prisma client once, use it all over the app
 const prisma = new PrismaClient();
 
 export async function getAllUsers() {
@@ -8,6 +9,32 @@ export async function getAllUsers() {
 		return users;
 	} catch (error) {
 		console.error("Error getting all users: ", error);
+	}
+}
+
+/*
+ * Product API Functions
+ */
+
+export async function getAllProducts() {
+	try {
+		const products = await prisma.products.findMany();
+		return products;
+	} catch (error) {
+		console.error("Error getting all products: ", error);
+	}
+}
+
+export async function getProduct(id) {
+	try {
+		const product = await prisma.products.findUnique({
+			where: {
+				id: parseInt(id),
+			},
+		});
+		return product;
+	} catch (error) {
+		console.error(`Error getting product ${id}: `, error);
 	}
 }
 
@@ -29,6 +56,10 @@ export async function createProduct(product) {
 	}
 }
 
+/*
+ * Users API Functions
+ */
+
 export async function createUser(user) {
 	const { firstname, lastname, username, password, type } = user;
 	try {
@@ -47,6 +78,10 @@ export async function createUser(user) {
 	}
 }
 
+/*
+ * Order API Functions
+ */
+
 export async function createOrder(order) {
 	const { userId, total, status } = order;
 	try {
@@ -62,6 +97,10 @@ export async function createOrder(order) {
 		console.error("Error creating order: ", error);
 	}
 }
+
+/*
+ * Products In Order API Functions
+ */
 
 export async function createProductInOrder(productInOrder) {
 	const { orderId, productId, quantity } = productInOrder;
