@@ -1,9 +1,8 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { PrismaClient } from "@prisma/client";
 import { getOrders, createUser } from "../db/index.js";
-const prisma = new PrismaClient();
+import prisma from "../db/index.js";
 const userRouter = express.Router();
 
 userRouter.get("/", async (req, res, next) => {
