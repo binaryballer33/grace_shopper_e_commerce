@@ -6,9 +6,13 @@ import {
 	CardMedia,
 	Grid,
 	Typography,
+	Button,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const ProductItem = ({ product, ...props }) => {
+	const navigate = useNavigate();
+
 	// trick to make our components behave like MUI components
 	return (
 		<Grid item>
@@ -17,16 +21,27 @@ const ProductItem = ({ product, ...props }) => {
 					<CardMedia
 						image={product.image}
 						alt={product.name}
-						component="iamge"
 						sx={{ height: 320 }}
+						component="img"
 					/>
 					<CardContent>
-						<Typography
-							variant="h5"
-							sx={{ textAlign: "center", fontWeight: "bold" }}
+						<Box
+							onClick={() => navigate(`/product/${product.id}`)}
+							sx={{
+								display: "flex",
+								justifyContent: "center",
+							}}
 						>
-							{product.name}
-						</Typography>
+							<Button
+								variant="text"
+								sx={{ color: "darkslategray" }}
+							>
+								<Typography variant="h5" fontWeight="bold">
+									{product.name}
+								</Typography>
+							</Button>
+						</Box>
+
 						<Typography
 							variant="body1"
 							sx={{ textAlign: "center" }}
