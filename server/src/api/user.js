@@ -108,49 +108,75 @@ userRouter.get("/me", async (req, res, next) => {
     });
     //remove password
     delete user.password;
-    //get all fulfilled/cancelled/incart orders of user
-    const orders = await prisma.orders.findMany({
-      where: { userId: id },
-    });
-    //get all the order items of the orders
-    const orderDetails = [];
-    for (let order of orders) {
-      orderDetails.push({
-        order,
-        items: await prisma.productsInOrder.findMany({
-          where: { orderId: order.id },
-        }),
-      });
-    }
-    const orderDetailsWithDescriptions = [];
-    //get the items description
-    for (let orderDetail of orderDetails) {
-      const itemInfo = [];
-      for (let item of orderDetail.items) {
-        itemInfo.push({
-          ...item,
-          itemDescription: await prisma.products.findFirst({
-            where: { id: item.productId },
-          }),
-        });
-      }
-      orderDetailsWithDescriptions.push({ ...orderDetail.order, itemInfo });
-    }
-    //clean up orders by breaking into 3 [] cancelled, fulfilled, and incart
-    const cancelled = [],
-      fulfilled = [],
-      incart = [];
-    orderDetailsWithDescriptions.forEach((order) => {
-      order.status === "cancelled"
-        ? cancelled.push(order)
-        : order.status === "fulfilled"
-        ? fulfilled.push(order)
-        : incart.push(order);
-    });
-    res.send({ cancelled, fulfilled, incart, user });
+    const orders = await getOrders(id);
+    res.send({ orders, user });
   } catch (error) {
     next(error);
   }
 });
+
+userRouter.post("/orders", async (req, res, next) => {
+  try {
+    if (!req.user) return res.send("User not logged in");
+    const admin = await prisma.users.findFirst({
+      where: {
+        id: req.user.id,
+      },
+    });
+    if (admin.type !== "admin") return res.send("Unauthorized");
+    const orders = await getOrders(req.body.id);
+    const user = await prisma.users.findFirst({
+      where: {
+        id: req.body.id,
+      },
+    });
+    res.send({ orders, user });
+  } catch (error) {
+    next(error);
+  }
+});
+
+const getOrders = async (id) => {
+  //get all fulfilled/cancelled/incart orders of user
+  const orders = await prisma.orders.findMany({
+    where: { userId: id },
+  });
+  //get all the order items of the orders
+  const orderDetails = [];
+  for (let order of orders) {
+    orderDetails.push({
+      order,
+      items: await prisma.productsInOrder.findMany({
+        where: { orderId: order.id },
+      }),
+    });
+  }
+  const orderDetailsWithDescriptions = [];
+  //get the items description
+  for (let orderDetail of orderDetails) {
+    const itemInfo = [];
+    for (let item of orderDetail.items) {
+      itemInfo.push({
+        ...item,
+        itemDescription: await prisma.products.findFirst({
+          where: { id: item.productId },
+        }),
+      });
+    }
+    orderDetailsWithDescriptions.push({ ...orderDetail.order, itemInfo });
+  }
+  //clean up orders by breaking into 3 [] cancelled, fulfilled, and incart
+  const cancelled = [],
+    fulfilled = [],
+    incart = [];
+  orderDetailsWithDescriptions.forEach((order) => {
+    order.status === "cancelled"
+      ? cancelled.push(order)
+      : order.status === "fulfilled"
+      ? fulfilled.push(order)
+      : incart.push(order);
+  });
+  return { cancelled, fulfilled, incart };
+};
 
 export default userRouter;
