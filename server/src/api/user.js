@@ -2,6 +2,7 @@ import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
+import { getOrders, createUser } from "../db/index.js";
 const prisma = new PrismaClient();
 const userRouter = express.Router();
 
@@ -68,15 +69,22 @@ userRouter.post("/register", async (req, res, next) => {
     const salt = await bcrypt.genSalt(8);
     const hashedPassword = await bcrypt.hash(password, salt);
     //add new user into db
-    const newUser = await prisma.users.create({
-      data: {
-        firstname,
-        lastname,
-        username,
-        password: hashedPassword,
-        type: "customer",
-      },
+    const newUser = await createUser({
+      firstname,
+      lastname,
+      username,
+      password: hashedPassword,
+      type: "customer",
     });
+    // const newUser = await prisma.users.create({
+    //   data: {
+    //     firstname,
+    //     lastname,
+    //     username,
+    //     password: hashedPassword,
+    //     type: "customer",
+    //   },
+    // });
     //provide user with token so they do not need to log in after registering
     const token = jwt.sign({ id: newUser.id }, process.env.JWT);
     //send back token and user data
@@ -145,48 +153,5 @@ userRouter.post("/orders", async (req, res, next) => {
     next(error);
   }
 });
-
-const getOrders = async (id) => {
-  //get all fulfilled/cancelled/incart orders of user
-  const orders = await prisma.orders.findMany({
-    where: { userId: id },
-  });
-  //get all the order items of the orders
-  const orderDetails = [];
-  for (let order of orders) {
-    orderDetails.push({
-      order,
-      items: await prisma.productsInOrder.findMany({
-        where: { orderId: order.id },
-      }),
-    });
-  }
-  const orderDetailsWithDescriptions = [];
-  //get the items description
-  for (let orderDetail of orderDetails) {
-    const itemInfo = [];
-    for (let item of orderDetail.items) {
-      itemInfo.push({
-        ...item,
-        itemDescription: await prisma.products.findFirst({
-          where: { id: item.productId },
-        }),
-      });
-    }
-    orderDetailsWithDescriptions.push({ ...orderDetail.order, itemInfo });
-  }
-  //clean up orders by breaking into 3 [] cancelled, fulfilled, and incart
-  const cancelled = [],
-    fulfilled = [],
-    incart = [];
-  orderDetailsWithDescriptions.forEach((order) => {
-    order.status === "cancelled"
-      ? cancelled.push(order)
-      : order.status === "fulfilled"
-      ? fulfilled.push(order)
-      : incart.push(order);
-  });
-  return { cancelled, fulfilled, incart };
-};
 
 export default userRouter;
