@@ -5,8 +5,8 @@ import { errorHandler, verifyToken } from "./middleware/middleware.js";
 
 const PORT = 3000;
 
-//verify token
-app.use(verifyToken);
+// //verify token
+// app.use(verifyToken);
 
 // Backend routes
 app.use("/user", userRouter);

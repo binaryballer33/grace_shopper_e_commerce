@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { getOrders, createUser } from "../db/index.js";
 import prisma from "../db/index.js";
+import { verifyToken } from "../middleware/middleware.js";
 const userRouter = express.Router();
 
 userRouter.get("/", async (req, res, next) => {
@@ -105,7 +106,7 @@ userRouter.post("/register", async (req, res, next) => {
 requires token
 returns {cancelled,fulfilled,incart,user}
 */
-userRouter.get("/me", async (req, res, next) => {
+userRouter.get("/me", verifyToken, async (req, res, next) => {
   try {
     if (!req.user) return res.send("User not logged in");
     const { id } = req.user;
@@ -126,7 +127,7 @@ userRouter.get("/me", async (req, res, next) => {
 requires id
 returns {orders,user}
 */
-userRouter.post("/orders", async (req, res, next) => {
+userRouter.post("/orders", verifyToken, async (req, res, next) => {
   try {
     //check if user is logged in
     if (!req.user) return res.send("User not logged in");
