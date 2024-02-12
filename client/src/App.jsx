@@ -1,20 +1,13 @@
-import { Stack, Typography } from "@mui/material";
-import "./App.css";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Products from "./components/products/Products";
 
 function App() {
 	return (
-		<Stack
-			sx={{
-				alignItems: "center",
-				justifyContent: "center",
-				height: "99vh",
-				width: "100vw",
-			}}
-		>
-			<Typography variant="h4" color="primary" mt={3}>
-				Hello World
-			</Typography>
-		</Stack>
+		<Router>
+			<Routes>
+				<Route index element={<Products />} />
+			</Routes>
+		</Router>
 	);
 }
 

@@ -7,7 +7,7 @@ const PORT = 3000;
 
 // Backend routes
 app.use("/user", userRouter);
-app.use("/product", productRouter);
+app.use("/products", productRouter);
 
 // Error handling middleware, make sure it's the last middleware added
 app.use(errorHandler);
