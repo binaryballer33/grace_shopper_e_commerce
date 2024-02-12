@@ -1,7 +1,7 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { getOrders, createUser } from "../db/index.js";
+import { getOrders, createUser, checkAdmin } from "../db/index.js";
 import prisma from "../db/index.js";
 import { verifyToken } from "../middleware/middleware.js";
 const userRouter = express.Router();
@@ -76,15 +76,6 @@ userRouter.post("/register", async (req, res, next) => {
       password: hashedPassword,
       type: "customer",
     });
-    // const newUser = await prisma.users.create({
-    //   data: {
-    //     firstname,
-    //     lastname,
-    //     username,
-    //     password: hashedPassword,
-    //     type: "customer",
-    //   },
-    // });
     //provide user with token so they do not need to log in after registering
     const token = jwt.sign({ id: newUser.id }, process.env.JWT);
     //send back token and user data
@@ -132,12 +123,7 @@ userRouter.post("/orders", verifyToken, async (req, res, next) => {
     //check if user is logged in
     if (!req.user) return res.send("User not logged in");
     //check if user had admin rights
-    const admin = await prisma.users.findFirst({
-      where: {
-        id: req.user.id,
-      },
-    });
-    if (admin.type !== "admin") return res.send("Unauthorized");
+    if (!(await checkAdmin(req.user.id))) return res.send("Unauthorized");
     //get all orders of user
     const orders = await getOrders(req.body.id);
     //get user data
