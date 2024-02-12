@@ -115,21 +115,31 @@ userRouter.get("/me", async (req, res, next) => {
   }
 });
 
+/*admin only route to get other customers info and orders
+requires id
+returns {orders,user}
+*/
 userRouter.post("/orders", async (req, res, next) => {
   try {
+    //check if user is logged in
     if (!req.user) return res.send("User not logged in");
+    //check if user had admin rights
     const admin = await prisma.users.findFirst({
       where: {
         id: req.user.id,
       },
     });
     if (admin.type !== "admin") return res.send("Unauthorized");
+    //get all orders of user
     const orders = await getOrders(req.body.id);
+    //get user data
     const user = await prisma.users.findFirst({
       where: {
         id: req.body.id,
       },
     });
+    //remove password
+    delete user.password;
     res.send({ orders, user });
   } catch (error) {
     next(error);
