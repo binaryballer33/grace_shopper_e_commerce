@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 
 // instantiate the prisma client once, use it all over the app
-export const prisma = new PrismaClient();
+const prisma = new PrismaClient();
 
 export async function getAllUsers() {
 	try {
