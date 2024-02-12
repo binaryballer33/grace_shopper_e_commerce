@@ -1,7 +1,7 @@
 import productRouter from "./api/product.js";
 import userRouter from "./api/user.js";
 import app from "./app.js";
-import { errorHandler, verifyToken } from "./middleware/middleware.js";
+import { errorHandler } from "./middleware/middleware.js";
 
 const PORT = 3000;
 
