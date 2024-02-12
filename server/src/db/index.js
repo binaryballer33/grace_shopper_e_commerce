@@ -17,25 +17,25 @@ export async function getAllUsers() {
  */
 
 export async function getAllProducts() {
-	try {
-		const products = await prisma.products.findMany();
-		return products;
-	} catch (error) {
-		console.error("Error getting all products: ", error);
-	}
+  try {
+    const products = await prisma.products.findMany();
+    return products;
+  } catch (error) {
+    console.error("Error getting all products: ", error);
+  }
 }
 
 export async function getProduct(id) {
-	try {
-		const product = await prisma.products.findUnique({
-			where: {
-				id: parseInt(id),
-			},
-		});
-		return product;
-	} catch (error) {
-		console.error(`Error getting product ${id}: `, error);
-	}
+  try {
+    const product = await prisma.products.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+    });
+    return product;
+  } catch (error) {
+    console.error(`Error getting product ${id}: `, error);
+  }
 }
 
 export async function createProduct(product) {
@@ -53,6 +53,40 @@ export async function createProduct(product) {
     return product;
   } catch (error) {
     console.error("Error creating product: ", error);
+  }
+}
+
+export async function updateProduct(product) {
+  const { id, name, description, image, count, price } = product;
+  try {
+    const product = await prisma.products.update({
+      where: {
+        id,
+      },
+      data: {
+        name,
+        description,
+        image,
+        count,
+        price,
+      },
+    });
+    return product;
+  } catch (error) {
+    console.error("Error creating product: ", error);
+  }
+}
+
+export async function deleteProduct(id) {
+  try {
+    const removeProduct = await prisma.products.delete({
+      where: {
+        id: Number(id),
+      },
+    });
+    return removeProduct;
+  } catch (error) {
+    console.error(error);
   }
 }
 
@@ -159,6 +193,19 @@ export const getOrders = async (id) => {
       : incart.push(order);
   });
   return { cancelled, fulfilled, incart };
+};
+
+export const checkAdmin = async (id) => {
+  try {
+    const admin = await prisma.users.findFirst({
+      where: {
+        id,
+      },
+    });
+    return admin.type === "admin";
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 export default prisma;
