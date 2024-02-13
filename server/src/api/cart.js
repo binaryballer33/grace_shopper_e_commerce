@@ -25,15 +25,27 @@ cartRouter.put("/cancel", verifyToken, async (req, res, next) => {
   }
 });
 
-//PUT /update - add item into an cart
+//PUT /update - add item into cart
 cartRouter.put("/update", verifyToken, async (req, res, next) => {
   try {
     if (!req.user) return res.send("User not logged in");
     const update = await updateCart(
       req.user.id,
       req.body.productid,
-      req.body.quantity
+      req.body.quantity,
+      true
     );
+    res.send(update);
+  } catch (error) {
+    next(error);
+  }
+});
+
+//PUT /delete - remove item from cart
+cartRouter.put("/delete", verifyToken, async (req, res, next) => {
+  try {
+    if (!req.user) return res.send("User not logged in");
+    const update = await updateCart(req.user.id, req.body.productid, 0, false);
     res.send(update);
   } catch (error) {
     next(error);

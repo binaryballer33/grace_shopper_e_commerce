@@ -245,7 +245,7 @@ export const checkoutOrder = async (id, type) => {
 };
 
 //allows user to add to cart
-export const updateCart = async (userId, productId, quantity) => {
+export const updateCart = async (userId, productId, quantity, isAdd) => {
   try {
     //gets the current cart
     let incart = await prisma.orders.findFirst({
@@ -260,14 +260,25 @@ export const updateCart = async (userId, productId, quantity) => {
           total: 0,
         },
       });
-    //add products to cart
-    await prisma.productsInOrder.create({
-      data: {
-        orderId: incart.id,
-        productId,
-        quantity,
-      },
-    });
+    //add/remove products to/from cart
+    let orderProduct;
+    if (isAdd)
+      await prisma.productsInOrder.create({
+        data: {
+          orderId: incart.id,
+          productId,
+          quantity,
+        },
+      });
+    else
+      orderProduct = await prisma.productsInOrder.delete({
+        where: {
+          orderId_productId: {
+            orderId: incart.id,
+            productId,
+          },
+        },
+      });
     //get the product details
     const product = await prisma.products.findFirst({
       where: {
@@ -280,7 +291,9 @@ export const updateCart = async (userId, productId, quantity) => {
         id: incart.id,
       },
       data: {
-        total: incart.total + product.price * quantity,
+        total: isAdd
+          ? incart.total + product.price * quantity
+          : incart.total - product.price * orderProduct.quantity,
       },
     });
     //gets the new cart info
