@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
-import ProductItem from "./product/ProductItem";
 import { Grid, Stack } from "@mui/material";
-import SearchBar from "../input/SearchBar";
-import { BACKEND_BASE_URL } from "../../utils/constant";
+import axios from "axios";
+import { SearchBar, ProductItem } from "../../components";
+import { getAllProductsRoute } from "../../utils/constant";
 
 const Products = () => {
 	// state values for the products component
@@ -15,15 +14,12 @@ const Products = () => {
 	useEffect(() => {
 		async function fetchAllProducts() {
 			try {
-				const response = await axios.get(
-					`${BACKEND_BASE_URL}/products`
-				);
+				const response = await axios.get(getAllProductsRoute());
 				setProducts(response.data.products);
 			} catch (error) {
 				console.error("Error fetching products: ", error);
 			}
 		}
-
 		fetchAllProducts();
 	}, []);
 
@@ -60,10 +56,9 @@ const Products = () => {
 					<ProductItem
 						key={product.id}
 						sx={{
-							p: 2,
+							p: { xs: 0.5, sm: 1 },
 							bgcolor: "darkslategray",
-							color: "#f3f3f3",
-							width: { xs: 300, sm: 400, md: 350, lg: 320 },
+							width: { xs: 300, sm: 400, md: 350, lg: 330 },
 						}}
 						product={product}
 					/>

@@ -2,31 +2,68 @@
 import {
 	Box,
 	Card,
-	CardContent,
 	CardMedia,
 	Grid,
 	Typography,
 	Button,
+	Stack,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { capitalize } from "../../../utils/helper_functions";
 
 const ProductItem = ({ product, ...props }) => {
 	const navigate = useNavigate();
+	const location = useLocation();
+	const isProductPage = location.pathname.includes("/product/");
 
-	// trick to make our components behave like MUI components
+	/* TODO: implement this affer setting up toolkit query and loading state,
+	 * currently has a bug on the product page where the product is undefined
+	 */
+	// let productDescription =
+	// 	product.description.length > 60
+	// 		? product.description.slice(0, 60) + "..."
+	// 		: product.description;
+	// productDescription = capitalize(productDescription);
+	// let productName = capitalize(product.name);
+
+	// navigate to the product page if the user is not already on the product page
+	const handleClick = () => {
+		isProductPage ? "" : navigate(`/product/${product.id}`);
+	};
+
 	return (
 		<Grid item>
+			{/* trick to make our components behave like MUI components and inherit their props */}
 			<Box {...props} key={product.id}>
-				<Card>
+				{/* card with a image, some content and some actions like add to cart */}
+				<Card
+					sx={{
+						height: isProductPage ? 600 : 500,
+					}}
+				>
+					{/* card image */}
 					<CardMedia
 						image={product.image}
 						alt={product.name}
-						sx={{ height: 320 }}
+						sx={{
+							height: 320,
+							objectFit: "fill", // makes the image fit perfectly into the card
+						}}
 						component="img"
 					/>
-					<CardContent>
+
+					{/* text inside of the card */}
+					<Stack
+						sx={{
+							p: 2,
+							//  height of the text container after subtracting the padding
+							height: isProductPage ? 248 : 148,
+							justifyContent: "space-between",
+						}}
+					>
+						{/* Styling for the button name */}
 						<Box
-							onClick={() => navigate(`/product/${product.id}`)}
+							onClick={handleClick}
 							sx={{
 								display: "flex",
 								justifyContent: "center",
@@ -55,14 +92,14 @@ const ProductItem = ({ product, ...props }) => {
 								mt: 2,
 							}}
 						>
-							<Typography variant="body1">
+							<Typography variant="body1" fontWeight={550}>
 								Price: {product.price}
 							</Typography>
-							<Typography variant="body1">
+							<Typography variant="body1" fontWeight={550}>
 								Quantity: {product.count}
 							</Typography>
 						</Box>
-					</CardContent>
+					</Stack>
 				</Card>
 			</Box>
 		</Grid>
