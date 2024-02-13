@@ -244,6 +244,70 @@ export const checkoutOrder = async (id, type) => {
   }
 };
 
+//allows user to add to cart
+export const updateCart = async (userId, productId, quantity) => {
+  try {
+    //gets the current cart
+    let incart = await prisma.orders.findFirst({
+      where: { userId, status: "inCart" },
+    });
+    //if there is no cart create an order with status of inCart
+    if (!incart)
+      incart = await prisma.orders.create({
+        data: {
+          userId,
+          status: "inCart",
+          total: 0,
+        },
+      });
+    //add products to cart
+    await prisma.productsInOrder.create({
+      data: {
+        orderId: incart.id,
+        productId,
+        quantity,
+      },
+    });
+    //get the product details
+    const product = await prisma.products.findFirst({
+      where: {
+        id: productId,
+      },
+    });
+    //update cart total
+    incart = await prisma.orders.update({
+      where: {
+        id: incart.id,
+      },
+      data: {
+        total: incart.total + product.price * quantity,
+      },
+    });
+    //gets the new cart info
+    //get all the products in the cart
+    const inCartItems = await prisma.productsInOrder.findMany({
+      where: {
+        orderId: incart.id,
+      },
+    });
+    // get all the product info in the cart
+    const inCartItemsWithDescription = [];
+    for (let item of inCartItems) {
+      inCartItemsWithDescription.push({
+        ...item,
+        itemInfo: await prisma.products.findFirst({
+          where: {
+            id: item.productId,
+          },
+        }),
+      });
+    }
+    return { order: incart, items: inCartItemsWithDescription };
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 // check admin role
 export const checkAdmin = async (id) => {
   try {

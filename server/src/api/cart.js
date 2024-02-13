@@ -1,5 +1,5 @@
 import express from "express";
-import { checkoutOrder } from "../db/index.js";
+import { checkoutOrder, updateCart } from "../db/index.js";
 import { verifyToken } from "../middleware/middleware.js";
 const cartRouter = express.Router();
 
@@ -20,6 +20,21 @@ cartRouter.put("/cancel", verifyToken, async (req, res, next) => {
     if (!req.user) return res.send("User not logged in");
     const cancelled = await checkoutOrder(req.user.id, "cancelled");
     res.send(cancelled);
+  } catch (error) {
+    next(error);
+  }
+});
+
+//PUT /update - add item into an cart
+cartRouter.put("/update", verifyToken, async (req, res, next) => {
+  try {
+    if (!req.user) return res.send("User not logged in");
+    const update = await updateCart(
+      req.user.id,
+      req.body.productid,
+      req.body.quantity
+    );
+    res.send(update);
   } catch (error) {
     next(error);
   }
