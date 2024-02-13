@@ -1,10 +1,10 @@
 /* eslint-disable react/prop-types */
-import { Stack, Button, Typography } from "@mui/material";
-import { useNavigate, useParams } from "react-router-dom";
-import { BACKEND_BASE_URL } from "../../../utils/constant";
-import axios from "axios";
 import { useEffect, useState } from "react";
-import ProductItem from "./ProductItem";
+import { useNavigate, useParams } from "react-router-dom";
+import { Stack, Button, Typography } from "@mui/material";
+import axios from "axios";
+import { ProductItem } from "../../../components";
+import { getProductByIdRoute } from "../../../utils/constant";
 
 const Product = () => {
 	const [product, setProduct] = useState({});
@@ -14,9 +14,7 @@ const Product = () => {
 	useEffect(() => {
 		async function fetchProduct() {
 			try {
-				const response = await axios.get(
-					`${BACKEND_BASE_URL}/products/product/${id}`
-				);
+				const response = await axios.get(getProductByIdRoute(id));
 				setProduct(response.data.product);
 			} catch (error) {
 				console.error("Error fetching product: ", error);
@@ -25,8 +23,8 @@ const Product = () => {
 		fetchProduct();
 	}, [id]);
 
-	// trick to make our components behave like MUI components
 	return (
+		// stack component used for centering the product item and the back button
 		<Stack
 			sx={{
 				height: "100vh",
@@ -35,11 +33,14 @@ const Product = () => {
 				justifyContent: "center",
 			}}
 		>
+			{/* Product Item component, used for displaying a single product */}
 			<ProductItem
 				product={product}
 				mb={3}
-				sx={{ width: { xs: 320, sm: 400, md: 500, lg: 600 } }}
+				sx={{ width: { xs: 300, sm: 400, md: 500, lg: 600 } }}
 			/>
+
+			{/* Navigate back to previous page button */}
 			<Button
 				variant="contained"
 				onClick={() => navigate(-1)} // go back to the previous page
@@ -50,7 +51,7 @@ const Product = () => {
 					":hover": { bgcolor: "white" },
 				}}
 			>
-				<Typography variant="h4" color="darkslategray">
+				<Typography variant="h5" color="darkslategray">
 					Back To All Products
 				</Typography>
 			</Button>

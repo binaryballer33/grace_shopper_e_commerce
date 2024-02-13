@@ -9,7 +9,6 @@ import {
 import ClearIcon from "@mui/icons-material/Clear";
 
 const SearchBar = ({ searchString, setSearchString }) => {
-	// TODO: fix width not being the same size as the grid for the books
 	return (
 		<Stack
 			flexDirection="row"

@@ -4,12 +4,17 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "seed": "node server/src/db/seed.js",
+    "build": "NODE_ENV=production vite build",
     "client": "vite --config client/vite.config.js",
-    "server": "nodemon server/src/server.js"
+    "client:dev": "npm run client",
+    "client:prod": "NODE_ENV=production vite --config client/vite.config.js",
+    "server": "nodemon server/src/server.js",
+    "server:dev": "npm run server",
+    "server:prod": "NODE_ENV=production node server/src/server.js",
+    "seed": "node server/src/db/seed.js",
+    "test": "jest"
   },
   "dependencies": {
     "@emotion/react": "^11.11.3",
@@ -22,7 +27,8 @@
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
-    "dotenv": "^16.1.4",
+    "dotenv": "^16.4.3",
+    "dotenv-expand": "^11.0.3",
     "express": "^4.18.2",
     "faker": "^6.6.6",
     "jsonwebtoken": "^9.0.0",

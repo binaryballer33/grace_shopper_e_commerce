@@ -8,6 +8,21 @@
 - MUI: v5.15.5,
 - Express: v4.18.2
 
+## Getting Started With The Package
+
+### Getting Project Dependencies
+
+- Run the npm command: `npm install`
+
+### Environment Variables Needed
+
+- create a `.env` file in the root directory of the project
+- create these env variables
+  - ***DATABASE_URL***=`postgresql://YOUR_POSTGRES_USERNAME:YOUR_POSTGRES_PASSWORD@YOUR_POSTGRES_IP_PORT_COMBINATION/YOUR_POSTGRES_TABLE_NAME?schema=public`
+  - ***VITE_PORT***=`YOUR_PORT_NUMBER_FOR_BACKEND_SERVER`
+  - ***VITE_DEVELOPMENT_BACKEND_BASE_URL***=`http://localhost:INSERT_YOUR_PORT_NUMBER_HERE`
+  - ***VITE_PRODUCTION_BACKEND_BASE_URL***=`https://REPLACE.ME.WITH.YOUR.PRODUCTION.URL.com`
+
 ## Frontend
 
 - All the work for the frontend portion of the application is located inside of the `client` directory
