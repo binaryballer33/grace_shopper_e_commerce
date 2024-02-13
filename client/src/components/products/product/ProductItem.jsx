@@ -16,13 +16,15 @@ const ProductItem = ({ product, ...props }) => {
 	const location = useLocation();
 	const isProductPage = location.pathname.includes("/product/");
 
-	// TODO: implement this affer setting up toolkit query and loading state
-	let productDescription =
-		product.description.length > 60
-			? product.description.slice(0, 60) + "..."
-			: product.description;
-	productDescription = capitalize(productDescription);
-	let productName = capitalize(product.name);
+	/* TODO: implement this affer setting up toolkit query and loading state,
+	 * currently has a bug on the product page where the product is undefined
+	 */
+	// let productDescription =
+	// 	product.description.length > 60
+	// 		? product.description.slice(0, 60) + "..."
+	// 		: product.description;
+	// productDescription = capitalize(productDescription);
+	// let productName = capitalize(product.name);
 
 	// navigate to the product page if the user is not already on the product page
 	const handleClick = () => {
@@ -81,7 +83,7 @@ const ProductItem = ({ product, ...props }) => {
 							variant="body1"
 							sx={{ textAlign: "center" }}
 						>
-							{productDescription}
+							{product.description}
 						</Typography>
 						<Box
 							sx={{
