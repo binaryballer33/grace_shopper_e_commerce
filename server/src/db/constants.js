@@ -404,9 +404,9 @@ export const ORDER_DATA = Array.from({ length: 15 }, () => ({
   status: Math.random() > 0.75 ? "fulfilled" : "cancelled",
   // don't need to create the date, it is auto generated
 })).concat([
-  { userId: 1, total: randomNumberBetweeen(1, 100), status: "inCart" },
-  { userId: 2, total: randomNumberBetweeen(1, 100), status: "inCart" },
-  { userId: 4, total: randomNumberBetweeen(1, 100), status: "inCart" },
+  { userId: 1, total: 0, status: "inCart" },
+  { userId: 2, total: 0, status: "inCart" },
+  { userId: 4, total: 0, status: "inCart" },
 ]);
 
 // array of 15 random order details
