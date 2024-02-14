@@ -245,7 +245,7 @@ export const checkoutOrder = async (id, type) => {
 };
 
 //allows user to add to cart
-export const updateCart = async (userId, productId, quantity, isAdd) => {
+export const updateCart = async (userId, productId, isAdd) => {
   try {
     //gets the current cart
     let incart = await prisma.orders.findFirst({
@@ -267,7 +267,7 @@ export const updateCart = async (userId, productId, quantity, isAdd) => {
         data: {
           orderId: incart.id,
           productId,
-          quantity,
+          quantity: 1,
         },
       });
     else
@@ -292,7 +292,7 @@ export const updateCart = async (userId, productId, quantity, isAdd) => {
       },
       data: {
         total: isAdd
-          ? incart.total + product.price * quantity
+          ? incart.total + product.price
           : incart.total - product.price * orderProduct.quantity,
       },
     });
@@ -316,6 +316,68 @@ export const updateCart = async (userId, productId, quantity, isAdd) => {
       });
     }
     return { order: incart, items: inCartItemsWithDescription };
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+//updates quantity
+export const updateQuantity = async (userId, productId, isIncrease) => {
+  try {
+    let counter = true;
+    //get cart info
+    let order = await prisma.orders.findFirst({
+      where: {
+        userId,
+      },
+    });
+    //update productsInOrder by 1
+    let orderItem = await prisma.productsInOrder.findFirst({
+      where: {
+        orderId: order.id,
+        productId,
+      },
+    });
+    //if deleting when quanitity is 1
+    if (orderItem.quantity === 1 && !isIncrease) {
+      orderItem = await prisma.productsInOrder.delete({
+        where: {
+          orderId_productId: { orderId: order.id, productId },
+        },
+      });
+      counter = false;
+    } else
+      orderItem = await prisma.productsInOrder.update({
+        where: {
+          orderId_productId: { orderId: order.id, productId },
+        },
+        data: {
+          quantity: isIncrease ? ++orderItem.quantity : --orderItem.quantity,
+        },
+      });
+    //get item price
+    const item = await prisma.products.findFirst({
+      where: {
+        id: productId,
+      },
+    });
+    //update order total
+    order = await prisma.orders.update({
+      where: {
+        id: order.id,
+        userId,
+      },
+      data: {
+        total: isIncrease ? order.total + item.price : order.total - item.price,
+      },
+    });
+    //send back only order, and new item quantity to reduce db calls, redux store should be able to use this data to just update order total and item quantity
+    return (
+      (counter && { order, orderItem }) || {
+        order,
+        orderItem: { ...orderItem, quantity: 0 },
+      }
+    );
   } catch (error) {
     console.error(error);
   }
