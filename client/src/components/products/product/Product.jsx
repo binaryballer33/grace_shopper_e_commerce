@@ -1,27 +1,11 @@
 /* eslint-disable react/prop-types */
-import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Stack, Button, Typography } from "@mui/material";
-import axios from "axios";
-import { ProductItem } from "../../../components";
-import { getProductByIdRoute } from "../../../utils/constant";
+import { Error, Loading, ProductItem } from "../../../components";
+import { useGetProductByIdQuery } from "../../../api/productApi";
 
-const Product = () => {
-	const [product, setProduct] = useState({});
-	const { id } = useParams();
+const RenderProduct = ({ product }) => {
 	const navigate = useNavigate();
-
-	useEffect(() => {
-		async function fetchProduct() {
-			try {
-				const response = await axios.get(getProductByIdRoute(id));
-				setProduct(response.data.product);
-			} catch (error) {
-				console.error("Error fetching product: ", error);
-			}
-		}
-		fetchProduct();
-	}, [id]);
 
 	return (
 		// stack component used for centering the product item and the back button
@@ -51,12 +35,25 @@ const Product = () => {
 					":hover": { bgcolor: "white" },
 				}}
 			>
-				<Typography variant="h5" color="darkslategray">
+				<Typography variant="h6" color="darkslategray">
 					Back To All Products
 				</Typography>
 			</Button>
 		</Stack>
 	);
+};
+
+const Product = () => {
+	const { id } = useParams();
+	const { data, error, isLoading } = useGetProductByIdQuery(id);
+
+	if (isLoading) {
+		return <Loading />;
+	} else if (error) {
+		return <Error error={error} />;
+	} else {
+		return <RenderProduct product={data.product} />;
+	}
 };
 
 export default Product;

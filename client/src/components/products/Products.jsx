@@ -1,27 +1,12 @@
+/* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
 import { Grid, Stack } from "@mui/material";
-import axios from "axios";
-import { SearchBar, ProductItem } from "../../components";
-import { getAllProductsRoute } from "../../utils/constant";
+import { SearchBar, ProductItem, Loading, Error } from "../../components";
+import { useGetProductsQuery } from "../../api/productApi";
 
-const Products = () => {
-	// state values for the products component
-	const [products, setProducts] = useState([]);
-	const [filteredProducts, setFilteredProducts] = useState(products);
+const RenderProducts = ({ products }) => {
 	const [searchString, setSearchString] = useState("");
-
-	// fetches all products from the server
-	useEffect(() => {
-		async function fetchAllProducts() {
-			try {
-				const response = await axios.get(getAllProductsRoute());
-				setProducts(response.data.products);
-			} catch (error) {
-				console.error("Error fetching products: ", error);
-			}
-		}
-		fetchAllProducts();
-	}, []);
+	const [filteredProducts, setFilteredProducts] = useState(products);
 
 	// state change that happens when the searchString changes, updates products that are displayed
 	useEffect(() => {
@@ -52,6 +37,7 @@ const Products = () => {
 					columnGap: searchString.length ? 2 : 0,
 				}}
 			>
+				{/* displays only the products that are available after the filter */}
 				{filteredProducts.map((product) => (
 					<ProductItem
 						key={product.id}
@@ -68,4 +54,16 @@ const Products = () => {
 	);
 };
 
+const Products = () => {
+	// fetches all products from the backend using redux toolkit query
+	const { data, error, isLoading } = useGetProductsQuery();
+
+	if (isLoading) {
+		return <Loading isLoading={isLoading} />;
+	} else if (!data) {
+		return <Error error={error} />;
+	} else {
+		return <RenderProducts products={data.products} />;
+	}
+};
 export default Products;
