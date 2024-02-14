@@ -244,6 +244,145 @@ export const checkoutOrder = async (id, type) => {
   }
 };
 
+//allows user to add to cart
+export const updateCart = async (userId, productId, isAdd) => {
+  try {
+    //gets the current cart
+    let incart = await prisma.orders.findFirst({
+      where: { userId, status: "inCart" },
+    });
+    //if there is no cart create an order with status of inCart
+    if (!incart)
+      incart = await prisma.orders.create({
+        data: {
+          userId,
+          status: "inCart",
+          total: 0,
+        },
+      });
+    //add/remove products to/from cart
+    let orderProduct;
+    if (isAdd)
+      await prisma.productsInOrder.create({
+        data: {
+          orderId: incart.id,
+          productId,
+          quantity: 1,
+        },
+      });
+    else
+      orderProduct = await prisma.productsInOrder.delete({
+        where: {
+          orderId_productId: {
+            orderId: incart.id,
+            productId,
+          },
+        },
+      });
+    //get the product details
+    const product = await prisma.products.findFirst({
+      where: {
+        id: productId,
+      },
+    });
+    //update cart total
+    incart = await prisma.orders.update({
+      where: {
+        id: incart.id,
+      },
+      data: {
+        total: isAdd
+          ? incart.total + product.price
+          : incart.total - product.price * orderProduct.quantity,
+      },
+    });
+    //gets the new cart info
+    //get all the products in the cart
+    const inCartItems = await prisma.productsInOrder.findMany({
+      where: {
+        orderId: incart.id,
+      },
+    });
+    // get all the product info in the cart
+    const inCartItemsWithDescription = [];
+    for (let item of inCartItems) {
+      inCartItemsWithDescription.push({
+        ...item,
+        itemInfo: await prisma.products.findFirst({
+          where: {
+            id: item.productId,
+          },
+        }),
+      });
+    }
+    return { order: incart, items: inCartItemsWithDescription };
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+//updates quantity
+export const updateQuantity = async (userId, productId, isIncrease) => {
+  try {
+    let counter = true;
+    //get cart info
+    let order = await prisma.orders.findFirst({
+      where: {
+        userId,
+      },
+    });
+    //update productsInOrder by 1
+    let orderItem = await prisma.productsInOrder.findFirst({
+      where: {
+        orderId: order.id,
+        productId,
+      },
+    });
+    //if deleting when quanitity is 1
+    if (orderItem.quantity === 1 && !isIncrease) {
+      orderItem = await prisma.productsInOrder.delete({
+        where: {
+          orderId_productId: { orderId: order.id, productId },
+        },
+      });
+      counter = false;
+    } else
+      orderItem = await prisma.productsInOrder.update({
+        where: {
+          orderId_productId: { orderId: order.id, productId },
+        },
+        data: {
+          quantity: isIncrease ? ++orderItem.quantity : --orderItem.quantity,
+        },
+      });
+    //get item price
+    const item = await prisma.products.findFirst({
+      where: {
+        id: productId,
+      },
+    });
+    //update order total
+    order = await prisma.orders.update({
+      where: {
+        id: order.id,
+        userId,
+      },
+      data: {
+        total: isIncrease ? order.total + item.price : order.total - item.price,
+      },
+    });
+    //send back only order, and new item quantity to reduce db calls, redux store should be able to use this data to just update order total and item quantity
+    return (
+      (counter && { order, orderItem }) || {
+        order,
+        orderItem: { ...orderItem, quantity: 0 },
+      }
+    );
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 // check admin role
 export const checkAdmin = async (id) => {
 	try {
