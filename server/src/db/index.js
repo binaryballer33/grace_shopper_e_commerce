@@ -195,6 +195,56 @@ export const getOrders = async (id) => {
 	return { cancelled, fulfilled, incart };
 };
 
+//will call this to either cancel an order or fulfill an order
+export const checkoutOrder = async (id, type) => {
+  try {
+    //get incart status for the user
+    const inCart = await prisma.orders.findFirst({
+      where: {
+        userId: id,
+        status: "inCart",
+      },
+    });
+    //get all the products in the cart
+    const inCartItems = await prisma.productsInOrder.findMany({
+      where: {
+        orderId: inCart.id,
+      },
+    });
+    // get all the product info in the cart
+    const inCartItemsWithDescription = [];
+    for (let item of inCartItems) {
+      inCartItemsWithDescription.push({
+        ...item,
+        itemInfo: await prisma.products.findFirst({
+          where: {
+            id: item.productId,
+          },
+        }),
+      });
+    }
+    //update order to be fulfilled
+    await prisma.orders.update({
+      where: {
+        id: inCart.id,
+      },
+      data: {
+        status: type === "inCart" ? "fulfilled" : "cancelled",
+      },
+    });
+    return {
+      order: {
+        ...inCart,
+        status: type === "inCart" ? "fulfilled" : "cancelled",
+      },
+      items: inCartItemsWithDescription,
+    };
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+// check admin role
 export const checkAdmin = async (id) => {
 	try {
 		const admin = await prisma.users.findFirst({
