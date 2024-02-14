@@ -9,7 +9,7 @@ import {
 	Stack,
 } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
-import { capitalize } from "../../../utils/helper_functions";
+// import { capitalize } from "../../../utils/helper_functions";
 
 const ProductItem = ({ product, ...props }) => {
 	const navigate = useNavigate();
