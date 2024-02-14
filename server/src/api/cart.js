@@ -1,5 +1,9 @@
 import express from "express";
-import { checkoutOrder, updateCart, updateQuantity } from "../db/index.js";
+import prisma, {
+  checkoutOrder,
+  updateCart,
+  updateQuantity,
+} from "../db/index.js";
 import { verifyToken } from "../middleware/middleware.js";
 const cartRouter = express.Router();
 
@@ -70,13 +74,75 @@ cartRouter.put("/updateDown", verifyToken, async (req, res, next) => {
 });
 
 //POST /addCart - if user is not logged in, the cart is saved in session storage, once logged in add session cart to db, call this when user logs in
-//session storage will look like session:{cart:[{item1},{item2},{item3}]}
+//session storage will look like session:{cart:[{item1:{productid,quantity}},{item2:{productid,quantity}},{item3:{productid,quantity}}]}
 //if session storage empty do nothing
-//if user has an empty cart, create order and add items to cart (updateCart())
-//if user has a cart without items, add items to cart (updateCart())
+//if user has an empty cart, create order and add items to cart
+//if user has a cart without items, add items to cart
 //if user has a cart with items, replace items in cart that already exist if quantity changed, otherwise add new items
 cartRouter.put("/addCart", verifyToken, async (req, res, next) => {
-  if (!req.user) return res.send("User not logged in");
+  try {
+    if (!req.user) return res.send("User not logged in");
+    if (!req.body.cart.length) return res.send();
+    //get the order of the user
+    const order = await prisma.orders.findFirst({
+      where: {
+        userId: req.user.id,
+        status: "inCart",
+      },
+    });
+    let orderItems = null,
+      total = 0;
+    //if there is an order get all the items in the order
+    if (order)
+      orderItems = await prisma.productsInOrder.findMany({
+        where: {
+          orderId: order?.id,
+        },
+      });
+    //no order create order
+    else
+      order = await prisma.orders.create({
+        data: {
+          userId: req.user.id,
+          status: "inCart",
+          total: 0,
+        },
+      });
+    //if no items in order
+    if (!orderItems) {
+      //add items into productsInOrder table
+      for (let items of req.body.cart) {
+        await prisma.productsInOrder.create({
+          data: {
+            productId: items.productid,
+            orderId: order.id,
+            quantity: items.quantity,
+          },
+        });
+        //get product info (price)
+        const item = await prisma.products.findFirst({
+          where: {
+            id: items.productid,
+          },
+        });
+        total += item.price;
+      }
+      //update order total
+      order = await prisma.orders.update({
+        where: {
+          id: order.id,
+          userId: req.user.id,
+        },
+        data: {
+          total: order.total + items.quantity * item.price,
+        },
+      });
+    }
+    //if there are items in order
+    res.send("done");
+  } catch (error) {
+    next(error);
+  }
 });
 
 export default cartRouter;
