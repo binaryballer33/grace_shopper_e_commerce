@@ -5,7 +5,7 @@ import { USER_CREDENTIALS } from "../utils/constant";
 // callback function to store user and token in session storage and state
 function storeUserAndToken(state, action) {
 	state.token = action.payload.token;
-	state.user = { ...action.payload.user };
+	state.user = action.payload.user;
 
 	window.sessionStorage.setItem(
 		USER_CREDENTIALS,
@@ -19,6 +19,7 @@ function storeUserAndToken(state, action) {
 const initialState = {
 	token: "",
 	user: {},
+	orders: [],
 };
 
 const userSlice = createSlice({
@@ -32,6 +33,8 @@ const userSlice = createSlice({
 			userApi.endpoints.getProfile.matchFulfilled,
 			(state, action) => {
 				state.user = action.payload.user;
+				state.orders = action.payload.orders;
+				// maybe update session storage to with the orders
 			}
 		);
 		builder.addMatcher(

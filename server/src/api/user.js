@@ -149,7 +149,12 @@ userRouter.get("/profile", verifyToken, async (req, res, next) => {
 		// remove password
 		delete user.password;
 		const orders = await getOrders(id);
-		res.send({ orders, user });
+
+		res.status(200).send({
+			message: `${user.firstname}'s Profile Has Been Retrieved Successfully`,
+			orders,
+			user,
+		});
 	} catch (error) {
 		next(error);
 	}
@@ -180,7 +185,11 @@ userRouter.post("/orders", verifyToken, async (req, res, next) => {
 
 		// remove password from user data before sending it to client
 		delete user.password;
-		res.send({ orders, user });
+		res.status(200).send({
+			message: "Orders For User Retrieved Successfully",
+			orders,
+			user,
+		});
 	} catch (error) {
 		next(error);
 	}

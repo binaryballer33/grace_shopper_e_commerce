@@ -1,6 +1,7 @@
 // allows me to do one line imports
 export { default as Loading } from "./state_indicators/Loading";
 export { default as Error } from "./state_indicators/Error";
+export { default as Cart } from "./cart/Cart";
 export { default as Products } from "./products/Products";
 export { default as Product } from "./products/product/Product";
 export { default as ProductItem } from "./products/product/ProductItem";
@@ -10,3 +11,4 @@ export { default as CreateForm } from "./auth/create_form/CreateForm";
 export { default as LoginForm } from "./auth/login_form/LoginForm";
 export { default as RegisterForm } from "./auth/register_form/RegisterForm";
 export { default as Logout } from "./auth/logout/Logout";
+export { default as Profile } from "./auth/profile/Profile";

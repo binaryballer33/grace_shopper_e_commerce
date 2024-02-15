@@ -6,6 +6,8 @@ import {
 	Logout,
 	LoginForm,
 	RegisterForm,
+	Profile,
+	Cart,
 } from "./components";
 
 function App() {
@@ -15,9 +17,11 @@ function App() {
 			<Routes>
 				<Route index element={<Products />} />
 				<Route path="/product/:id" element={<Product />} />
+				<Route path="/cart" element={<Cart />} />
 				<Route path="/login" element={<LoginForm />} />
 				<Route path="/register" element={<RegisterForm />} />
 				<Route path="/logout" element={<Logout />} />
+				<Route path="/profile" element={<Profile />} />
 			</Routes>
 		</Router>
 	);

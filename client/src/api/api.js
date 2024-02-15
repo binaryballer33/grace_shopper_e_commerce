@@ -6,16 +6,16 @@ const api = createApi({
 	reducerPath: "api",
 	baseQuery: fetchBaseQuery({
 		baseUrl: BACKEND_BASE_URL,
+		// Define headers to be added to every request
+		prepareHeaders: (headers, { getState }) => {
+			const token = getState().user.token;
+			headers.set("Content-Type", "application/json");
+			if (token) {
+				headers.set("authorization", `Bearer ${token}`);
+			}
+			return headers;
+		},
 	}),
-	// Define headers to be added to every request
-	prepareHeaders: (headers, { getState }) => {
-		const token = getState().user.token;
-		headers.set("Content-Type", "application/json");
-		if (token) {
-			headers.set("authorization", `Bearer ${token}`);
-		}
-		return headers;
-	},
 	endpoints: () => ({}), // define endpoints in their own separate files
 });
 

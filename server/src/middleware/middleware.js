@@ -19,6 +19,7 @@ export const verifyToken = (req, res, next) => {
 
 	// if token is good add user to request
 	try {
+		// eslint-disable-next-line no-undef
 		req.user = jwt.verify(token, process.env.JWT);
 	} catch {
 		// if unable to verify user not logged in
