@@ -1,8 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import userApi from "../api/userApi"; // HAVE TO IMPORT userApi HERE and NOT api!!!
-
-// session storage key
-const USER_CREDENTIALS = "user_credentials";
+import { USER_CREDENTIALS } from "../utils/constant";
 
 // callback function to store user and token in session storage and state
 function storeUserAndToken(state, action) {
@@ -13,7 +11,7 @@ function storeUserAndToken(state, action) {
 		USER_CREDENTIALS,
 		JSON.stringify({
 			token: action.payload.token,
-			user: { ...action.payload.user },
+			user: action.payload.user,
 		})
 	);
 }

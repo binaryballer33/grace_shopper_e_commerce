@@ -5,3 +5,8 @@ export { default as Products } from "./products/Products";
 export { default as Product } from "./products/product/Product";
 export { default as ProductItem } from "./products/product/ProductItem";
 export { default as SearchBar } from "./input/SearchBar";
+export { default as NavBar } from "./nav_bar/NavBar";
+export { default as CreateForm } from "./auth/create_form/CreateForm";
+export { default as LoginForm } from "./auth/login_form/LoginForm";
+export { default as RegisterForm } from "./auth/register_form/RegisterForm";
+export { default as Logout } from "./auth/logout/Logout";

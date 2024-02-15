@@ -35,7 +35,7 @@ const RenderProduct = ({ product }) => {
 					":hover": { bgcolor: "white" },
 				}}
 			>
-				<Typography variant="h6" color="darkslategray">
+				<Typography variant="h6" sx={{ color: "primary.dark" }}>
 					Back To All Products
 				</Typography>
 			</Button>
