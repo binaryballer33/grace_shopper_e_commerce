@@ -3,7 +3,7 @@ import prisma, {
   checkoutOrder,
   updateCart,
   updateQuantity,
-  intialAdd,
+  initialAdd,
 } from "../db/index.js";
 import { verifyToken } from "../middleware/middleware.js";
 const cartRouter = express.Router();
@@ -86,7 +86,7 @@ cartRouter.put("/addCart", verifyToken, async (req, res, next) => {
       ? res.send("User not logged in")
       : !req.body.cart.length
       ? res.send()
-      : res.send(await intialAdd(req.user.id, req.body.cart));
+      : res.send(await initialAdd(req.user.id, req.body.cart));
   } catch (error) {
     next(error);
   }
