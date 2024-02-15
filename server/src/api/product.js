@@ -16,7 +16,10 @@ productRouter.get("/", async (req, res, next) => {
   try {
     const products = await getAllProducts();
 
-    if (!products) return res.status(500).send("Failed To Get Products.");
+    if (!products)
+      return res
+        .status(500)
+        .send({ message: "Failed To Get Products.", status: res.statusCode });
 
     res.status(200).send({
       message: "Successfully Retrieved All Products",
@@ -34,9 +37,10 @@ productRouter.get("/product/:id", async (req, res, next) => {
   try {
     const product = await getProduct(id);
     if (!product)
-      return res
-        .status(500)
-        .send(`Failed To Get Products ${id}: ${product.name}`);
+      return res.status(500).send({
+        message: `Failed To Get Products ${id}: ${product.name}`,
+        status: res.statusCode,
+      });
 
     res.status(200).send({
       message: `Successfully Retrieved Product ${id}: ${product.name}`,
@@ -50,8 +54,14 @@ productRouter.get("/product/:id", async (req, res, next) => {
 // POST /create - Create a new product
 productRouter.post("/create", verifyToken, async (req, res, next) => {
   try {
-    if (!req.user) return res.send("User not logged in");
-    if (!(await checkAdmin(req.user.id))) return res.send("Unauthorized");
+    if (!req.user)
+      return res
+        .status(400)
+        .send({ message: "User not logged in", status: res.statusCode });
+    if (!(await checkAdmin(req.user.id)))
+      return res
+        .status(400)
+        .send({ message: "Unauthorized", status: res.statusCode });
     const { name, description, image, count, price } = req.body;
     const product = await createProduct({
       name,
@@ -60,7 +70,9 @@ productRouter.post("/create", verifyToken, async (req, res, next) => {
       count,
       price,
     });
-    res.send({ product });
+    res
+      .status(201)
+      .send({ message: "Successfully created a new product.", product });
   } catch (error) {
     next(error);
   }
@@ -69,8 +81,14 @@ productRouter.post("/create", verifyToken, async (req, res, next) => {
 //PUT /update/:id - update a product
 productRouter.put("/update/:id", verifyToken, async (req, res, next) => {
   try {
-    if (!req.user) return res.send("User not logged in");
-    if (!(await checkAdmin(req.user.id))) return res.send("Unauthorized");
+    if (!req.user)
+      return res
+        .status(400)
+        .send({ message: "User not logged in", status: res.statusCode });
+    if (!(await checkAdmin(req.user.id)))
+      return res
+        .status(400)
+        .send({ message: "Unauthorized", status: res.statusCode });
     const { name, description, image, count, price } = req.body;
     const { id } = req.params;
     const product = await updateProduct({
@@ -81,7 +99,9 @@ productRouter.put("/update/:id", verifyToken, async (req, res, next) => {
       count,
       price,
     });
-    res.send({ product });
+    res
+      .status(200)
+      .send({ message: "Successfully updated the product", product });
   } catch (error) {
     next(error);
   }
@@ -91,10 +111,19 @@ productRouter.put("/update/:id", verifyToken, async (req, res, next) => {
 //this does not handle removing the product for each user whose order contains the product, would prob be better to create a column for active and set to false
 productRouter.delete("/delete/:id", verifyToken, async (req, res, next) => {
   try {
-    if (!req.user) return res.send("User not logged in");
-    if (!(await checkAdmin(req.user.id))) return res.send("Unauthorized");
+    if (!req.user)
+      return res.status(400).send({
+        message: "User not logged in",
+        status: res.statusCode,
+      });
+    if (!(await checkAdmin(req.user.id)))
+      return res
+        .status(400)
+        .send({ message: "Unauthorized", status: res.statusCode });
     const removeProduct = await deleteProduct(req.params.id);
-    res.send({ removeProduct });
+    res
+      .status(200)
+      .send({ message: "Successfully removed product", removeProduct });
   } catch (error) {
     next(error);
   }
