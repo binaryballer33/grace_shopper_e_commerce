@@ -1,5 +1,10 @@
 import express from "express";
-import { checkoutOrder, updateCart, updateQuantity } from "../db/index.js";
+import prisma, {
+  checkoutOrder,
+  updateCart,
+  updateQuantity,
+  intialAdd,
+} from "../db/index.js";
 import { verifyToken } from "../middleware/middleware.js";
 const cartRouter = express.Router();
 
@@ -70,13 +75,21 @@ cartRouter.put("/updateDown", verifyToken, async (req, res, next) => {
 });
 
 //POST /addCart - if user is not logged in, the cart is saved in session storage, once logged in add session cart to db, call this when user logs in
-//session storage will look like session:{cart:[{item1},{item2},{item3}]}
+//session storage will look like session:{cart:[{productid,quantity},{productid,quantity},{productid,quantity}]}
 //if session storage empty do nothing
-//if user has an empty cart, create order and add items to cart (updateCart())
-//if user has a cart without items, add items to cart (updateCart())
-//if user has a cart with items, replace items in cart that already exist if quantity changed, otherwise add new items
+//if user has an empty cart, create order and add items to cart
+//if user has a cart without items, add items to cart
+//if user has a cart with items, replace items and add new items
 cartRouter.put("/addCart", verifyToken, async (req, res, next) => {
-  if (!req.user) return res.send("User not logged in");
+  try {
+    return !req.user
+      ? res.send("User not logged in")
+      : !req.body.cart.length
+      ? res.send()
+      : res.send(await intialAdd(req.user.id, req.body.cart));
+  } catch (error) {
+    next(error);
+  }
 });
 
 export default cartRouter;
