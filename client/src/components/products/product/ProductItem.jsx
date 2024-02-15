@@ -7,24 +7,23 @@ import {
 	Typography,
 	Button,
 	Stack,
+	Tooltip,
 } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
-// import { capitalize } from "../../../utils/helper_functions";
+import { capitalize } from "../../../utils/helper_functions";
 
 const ProductItem = ({ product, ...props }) => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const isProductPage = location.pathname.includes("/product/");
 
-	/* TODO: implement this affer setting up toolkit query and loading state,
-	 * currently has a bug on the product page where the product is undefined
-	 */
-	// let productDescription =
-	// 	product.description.length > 60
-	// 		? product.description.slice(0, 60) + "..."
-	// 		: product.description;
-	// productDescription = capitalize(productDescription);
-	// let productName = capitalize(product.name);
+	let productDescription =
+		!isProductPage && product.description.length > 60
+			? product.description.slice(0, 60) + "..."
+			: product.description;
+	productDescription = capitalize(productDescription);
+
+	let productName = capitalize(product.name);
 
 	// navigate to the product page if the user is not already on the product page
 	const handleClick = () => {
@@ -36,71 +35,74 @@ const ProductItem = ({ product, ...props }) => {
 			{/* trick to make our components behave like MUI components and inherit their props */}
 			<Box {...props} key={product.id}>
 				{/* card with a image, some content and some actions like add to cart */}
-				<Card
-					sx={{
-						height: isProductPage ? 600 : 500,
-					}}
-				>
-					{/* card image */}
-					<CardMedia
-						image={product.image}
-						alt={product.name}
+				<Tooltip title={productName} placement="top">
+					<Card
+						elevation={10}
 						sx={{
-							height: 320,
-							objectFit: "fill", // makes the image fit perfectly into the card
-						}}
-						component="img"
-					/>
-
-					{/* text inside of the card */}
-					<Stack
-						sx={{
-							p: 2,
-							//  height of the text container after subtracting the padding
-							height: isProductPage ? 248 : 148,
-							justifyContent: "space-between",
+							height: isProductPage ? 600 : 500,
 						}}
 					>
-						{/* Styling for the button name */}
-						<Box
-							onClick={handleClick}
+						{/* card image */}
+						<CardMedia
+							image={product.image}
+							alt={productName}
 							sx={{
-								display: "flex",
-								justifyContent: "center",
+								height: 320,
+								objectFit: "fill", // makes the image fit perfectly into the card
 							}}
-						>
-							<Button
-								variant="text"
-								sx={{ color: "darkslategray" }}
-							>
-								<Typography variant="h5" fontWeight="bold">
-									{product.name}
-								</Typography>
-							</Button>
-						</Box>
+							component="img"
+						/>
 
-						<Typography
-							variant="body1"
-							sx={{ textAlign: "center" }}
-						>
-							{product.description}
-						</Typography>
-						<Box
+						{/* text inside of the card */}
+						<Stack
 							sx={{
-								display: "flex",
+								p: 2,
+								//  height of the text container after subtracting the padding
+								height: isProductPage ? 248 : 148,
 								justifyContent: "space-between",
-								mt: 2,
 							}}
 						>
-							<Typography variant="body1" fontWeight={550}>
-								Price: {product.price}
+							{/* Styling for the button name */}
+							<Box
+								onClick={handleClick}
+								sx={{
+									display: "flex",
+									justifyContent: "center",
+								}}
+							>
+								<Button
+									variant="text"
+									sx={{ color: "primary" }}
+								>
+									<Typography variant="h5" fontWeight="bold">
+										{productName}
+									</Typography>
+								</Button>
+							</Box>
+
+							<Typography
+								variant="body1"
+								sx={{ textAlign: "center" }}
+							>
+								{productDescription}
 							</Typography>
-							<Typography variant="body1" fontWeight={550}>
-								Quantity: {product.count}
-							</Typography>
-						</Box>
-					</Stack>
-				</Card>
+							<Box
+								sx={{
+									display: "flex",
+									justifyContent: "space-between",
+									mt: 2,
+								}}
+							>
+								<Typography variant="body1" fontWeight={550}>
+									Price: {product.price}
+								</Typography>
+								<Typography variant="body1" fontWeight={550}>
+									Quantity: {product.count}
+								</Typography>
+							</Box>
+						</Stack>
+					</Card>
+				</Tooltip>
 			</Box>
 		</Grid>
 	);

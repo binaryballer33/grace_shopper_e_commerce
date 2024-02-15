@@ -7,6 +7,9 @@
  * env variables
  */
 
+// session storage key
+export const USER_CREDENTIALS = "user_credentials";
+
 // backend base url for development and production
 export const BACKEND_BASE_URL = import.meta.env.DEV
 	? import.meta.env.VITE_DEVELOPMENT_BACKEND_BASE_URL

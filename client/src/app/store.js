@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import api from "../api/api";
 import productReducer from "../app/productSlice";
+import userReducer from "../app/userSlice";
 import logger from "redux-logger";
 
 /* TODO: figure out how to use these libraries with redux toolkit after cart is built
@@ -15,6 +16,7 @@ export const store = configureStore({
 	reducer: {
 		[api.reducerPath]: api.reducer, // key reducer path, value reducer
 		product: productReducer,
+		user: userReducer,
 	},
 	middleware: (getDefaultMiddleware) =>
 		import.meta.env.DEV

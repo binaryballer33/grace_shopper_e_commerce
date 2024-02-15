@@ -43,7 +43,7 @@ const RenderProducts = ({ products }) => {
 						key={product.id}
 						sx={{
 							p: { xs: 0.5, sm: 1 },
-							bgcolor: "darkslategray",
+							bgcolor: "primary.main",
 							width: { xs: 300, sm: 400, md: 350, lg: 330 },
 						}}
 						product={product}

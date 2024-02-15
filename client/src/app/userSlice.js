@@ -1,19 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
 import userApi from "../api/userApi"; // HAVE TO IMPORT userApi HERE and NOT api!!!
-
-// session storage key
-const USER_CREDENTIALS = "user_credentials";
+import { USER_CREDENTIALS } from "../utils/constant";
 
 // callback function to store user and token in session storage and state
 function storeUserAndToken(state, action) {
 	state.token = action.payload.token;
-	state.user = { ...action.payload.user };
+	state.user = action.payload.user;
 
 	window.sessionStorage.setItem(
 		USER_CREDENTIALS,
 		JSON.stringify({
 			token: action.payload.token,
-			user: { ...action.payload.user },
+			user: action.payload.user,
 		})
 	);
 }
@@ -21,6 +19,7 @@ function storeUserAndToken(state, action) {
 const initialState = {
 	token: "",
 	user: {},
+	orders: [],
 };
 
 const userSlice = createSlice({
@@ -34,6 +33,8 @@ const userSlice = createSlice({
 			userApi.endpoints.getProfile.matchFulfilled,
 			(state, action) => {
 				state.user = action.payload.user;
+				state.orders = action.payload.orders;
+				// maybe update session storage to with the orders
 			}
 		);
 		builder.addMatcher(
