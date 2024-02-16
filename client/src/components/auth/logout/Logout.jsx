@@ -8,7 +8,7 @@ const LogoutFailure = () => {
 	return (
 		<Stack
 			sx={{
-				width: "100%",
+				width: "100vw",
 				height: "100vh",
 				alignItems: "center",
 				justifyContent: "center",
@@ -75,7 +75,7 @@ const Logout = () => {
 		 */
 		const timer = setTimeout(() => {
 			if (location.pathname === currentLocation) {
-				navigate("/");
+				navigate("/products");
 			}
 		}, 4000);
 

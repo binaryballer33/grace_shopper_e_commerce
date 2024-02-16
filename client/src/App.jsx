@@ -8,6 +8,9 @@ import {
 	RegisterForm,
 	Profile,
 	Cart,
+	LandingPage,
+	Testimonials,
+	Contact,
 } from "./components";
 
 function App() {
@@ -15,7 +18,10 @@ function App() {
 		<Router>
 			<NavBar />
 			<Routes>
-				<Route index element={<Products />} />
+				<Route index element={<LandingPage />} />
+				<Route path="/testimonials" element={<Testimonials />} />
+				<Route path="/contact" element={<Contact />} />
+				<Route path="/products" element={<Products />} />
 				<Route path="/product/:id" element={<Product />} />
 				<Route path="/cart" element={<Cart />} />
 				<Route path="/login" element={<LoginForm />} />

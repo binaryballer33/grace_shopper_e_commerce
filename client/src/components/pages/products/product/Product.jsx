@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
 import { useNavigate, useParams } from "react-router-dom";
 import { Stack, Button, Typography } from "@mui/material";
-import { Error, Loading, ProductItem } from "../../../components";
-import { useGetProductByIdQuery } from "../../../api/productApi";
+import { Error, Loading, ProductItem } from "../../../../components";
+import { useGetProductByIdQuery } from "../../../../api/productApi";
 
 const RenderProduct = ({ product }) => {
 	const navigate = useNavigate();

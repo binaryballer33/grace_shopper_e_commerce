@@ -34,6 +34,24 @@ const ProfileSuccess = ({ user }) => {
 	);
 };
 
+const ProfileFailure = () => {
+	return (
+		<Stack
+			sx={{
+				width: "100%",
+				height: "100vh",
+				alignItems: "center",
+				justifyContent: "center",
+				textAlign: "center",
+			}}
+		>
+			<Typography variant="h4" color="primary">
+				You Must Log In To Access Your Profile
+			</Typography>
+		</Stack>
+	);
+};
+
 const Profile = () => {
 	// get the token and user from session storage if exists, if not return empty user and token
 	const { token, user } = JSON.parse(
@@ -41,20 +59,7 @@ const Profile = () => {
 	) || { token: "", user: {} };
 
 	if (!token || !user) {
-		return (
-			<Stack
-				sx={{
-					width: "100%",
-					height: "100vh",
-					alignItems: "center",
-					justifyContent: "center",
-				}}
-			>
-				<Typography variant="h4" color="primary">
-					You Must Log In To Access Your Profile
-				</Typography>
-			</Stack>
-		);
+		return <ProfileFailure />;
 	} else {
 		return <ProfileSuccess user={user} />;
 	}
