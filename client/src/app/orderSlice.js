@@ -61,6 +61,21 @@ const orderSlice = createSlice({
       state.order = {};
       state.items = [];
     });
+    //NOT REQUIRED SINCE ADD IS IN PRODUCTS PAGE AND CART WILL GET DATA ALREADY WHEN HIT
+    // builder.addMatcher(
+    //   orderApi.endpoints.add.matchFulfilled,
+    //   (state, { payload }) => {
+    //     state.order = payload.order.order;
+    //     state.items = payload.order.items.map((item) => {
+    //       return {
+    //         orderId: item.orderId,
+    //         productId: item.productId,
+    //         quanitity: item.quantity,
+    //         itemDescription: item.itemInfo,
+    //       };
+    //     });
+    //   }
+    // );
   },
 });
 
