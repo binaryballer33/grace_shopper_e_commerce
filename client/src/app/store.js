@@ -3,6 +3,7 @@ import api from "../api/api";
 import productReducer from "../app/productSlice";
 import userReducer from "../app/userSlice";
 import logger from "redux-logger";
+import orderReducer from "../app/orderSlice";
 
 /* TODO: figure out how to use these libraries with redux toolkit after cart is built
  * import { persistStore, persistReducer } from "redux-persist";
@@ -13,13 +14,14 @@ import logger from "redux-logger";
 
 // Create a Redux store
 export const store = configureStore({
-	reducer: {
-		[api.reducerPath]: api.reducer, // key reducer path, value reducer
-		product: productReducer,
-		user: userReducer,
-	},
-	middleware: (getDefaultMiddleware) =>
-		import.meta.env.DEV
-			? getDefaultMiddleware().concat(api.middleware, logger)
-			: getDefaultMiddleware().concat(api.middleware),
+  reducer: {
+    [api.reducerPath]: api.reducer, // key reducer path, value reducer
+    product: productReducer,
+    user: userReducer,
+    order: orderReducer,
+  },
+  middleware: (getDefaultMiddleware) =>
+    import.meta.env.DEV
+      ? getDefaultMiddleware().concat(api.middleware, logger)
+      : getDefaultMiddleware().concat(api.middleware),
 });

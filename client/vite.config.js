@@ -12,8 +12,18 @@ import dotenvExpand from "dotenv-expand";
 const env = dotenv.config({ path: "./.env" });
 dotenvExpand.expand(env);
 
-// https://vitejs.dev/config/
+// // https://vitejs.dev/config/
+// export default defineConfig({
+// 	plugins: [react()],
+// 	root: "./client",
+// });
+
 export default defineConfig({
-	plugins: [react()],
-	root: "./client",
+  plugins: [react()],
+  root: "./client",
+  server: {
+    watch: {
+      usePolling: true,
+    },
+  },
 });
