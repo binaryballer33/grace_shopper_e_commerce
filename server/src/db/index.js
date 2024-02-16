@@ -384,7 +384,7 @@ export const updateQuantity = async (userId, productId, isIncrease) => {
   }
 };
 
-export const intialAdd = async (id, cart) => {
+export const initialAdd = async (id, cart) => {
   try {
     //find the order (inCart) of the user
     let order = await prisma.orders.findFirst({
