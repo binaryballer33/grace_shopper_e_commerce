@@ -4,9 +4,36 @@ import prisma, {
   updateCart,
   updateQuantity,
   initialAdd,
+  getIncartOrder,
 } from "../db/index.js";
 import { verifyToken } from "../middleware/middleware.js";
 const cartRouter = express.Router();
+
+//GET /incart all incart orders of user
+cartRouter.get("/incart", verifyToken, async (req, res, next) => {
+  try {
+    if (!req.user)
+      return res
+        .status(400)
+        .send({ message: "User not logged in", status: res.statusCode });
+    const inCart = await getIncartOrder(req.user.id);
+    inCart.val === 1
+      ? res.status(200).send({
+          message: "Successfully checked for incart order but none exists",
+          order: { order: {}, orderDetailsWithDescriptions: [] },
+        })
+      : inCart.val === 2
+      ? res.status(200).send({
+          message: "Successfully checked for incart order but none exists",
+          order: { order: inCart.order, orderDetailsWithDescriptions: [] },
+        })
+      : res
+          .status(200)
+          .send({ message: "Successfully found cart data", order: inCart });
+  } catch (error) {
+    next(error);
+  }
+});
 
 //PUT /checkout - checks out items in the cart
 cartRouter.put("/checkout", verifyToken, async (req, res, next) => {
