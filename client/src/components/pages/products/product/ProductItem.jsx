@@ -10,7 +10,7 @@ import {
 	Tooltip,
 } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
-import { capitalize } from "../../../utils/helper_functions";
+import { capitalize } from "../../../../utils/helper_functions";
 
 const ProductItem = ({ product, ...props }) => {
 	const navigate = useNavigate();
@@ -94,10 +94,24 @@ const ProductItem = ({ product, ...props }) => {
 								}}
 							>
 								<Typography variant="body1" fontWeight={550}>
-									Price: {product.price}
+									Price:{" "}
+									<Typography
+										component="span"
+										fontWeight={550}
+										sx={{ color: "primary.main" }}
+									>
+										${product.price}
+									</Typography>
 								</Typography>
 								<Typography variant="body1" fontWeight={550}>
-									Quantity: {product.count}
+									Quantity:{" "}
+									<Typography
+										component="span"
+										fontWeight={550}
+										sx={{ color: "primary.dark" }}
+									>
+										{product.count}
+									</Typography>
 								</Typography>
 							</Box>
 						</Stack>

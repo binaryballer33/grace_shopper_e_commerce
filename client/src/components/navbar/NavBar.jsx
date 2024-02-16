@@ -13,15 +13,22 @@ import {
 	MenuItem,
 	Menu,
 	Stack,
+	Divider,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import PersonIcon from "@mui/icons-material/Person";
 import navBarLogo from "../../assets/greenAppleLogo.avif";
+import { USER_CREDENTIALS } from "../../utils/constant";
 
 const NavBar = () => {
 	// links and account options
-	const pages = ["Cart"];
-	const settings = ["Profile", "Log In", "Register", "Log Out"];
+	const pages = ["Testimonials", "Contact"];
+	const settings = ["Profile", "Cart", "Log In", "Register", "Log Out"];
+
+	// get the user credentials from the session storage
+	const { token, user } = JSON.parse(
+		window.sessionStorage.getItem(USER_CREDENTIALS)
+	) || { token: "", user: {} };
 
 	// state variables
 	const [anchorElNav, setAnchorElNav] = useState(null);
@@ -107,11 +114,23 @@ const NavBar = () => {
 					</Box>
 
 					{/*  This is for Logo, Using component = React Router Dom Link in order to get rid of unwanted styling */}
+					<Button component={Link} to="/" sx={{ p: 0 }}>
+						<img
+							id="logo-image"
+							src={navBarLogo}
+							alt="The Products logo"
+							style={{
+								height: "45px",
+								width: "45px",
+								borderRadius: "50%",
+							}}
+						/>
+					</Button>
 					<Typography
 						variant="h6"
 						noWrap
 						component={Link}
-						to="/"
+						to="/products"
 						sx={{
 							display: "flex",
 							fontWeight: 700,
@@ -120,17 +139,6 @@ const NavBar = () => {
 							textDecoration: "none",
 						}}
 					>
-						<img
-							id="logo-image"
-							src={navBarLogo}
-							alt="The Products logo"
-							style={{
-								marginRight: "10px",
-								height: "45px",
-								width: "45px",
-								borderRadius: "50%",
-							}}
-						/>
 						<Stack
 							sx={{
 								justifyContent: "center",
@@ -199,26 +207,65 @@ const NavBar = () => {
 							open={Boolean(anchorElUser)}
 							onClose={handleCloseUserMenu}
 						>
-							{settings.map((setting) => (
-								<MenuItem
-									key={setting}
-									onClick={handleCloseUserMenu}
-								>
+							{/* Renders User's Name If They Are Logged In */}
+							{token && user && (
+								<Box>
 									<Typography
+										variant="body1"
+										color="primary.main"
 										textAlign="center"
-										component={Link}
-										to={`/${setting
-											.replace(" ", "")
-											.toLowerCase()}`}
-										sx={{
-											textDecoration: "none",
-											color: "inherit",
-										}}
 									>
-										{setting}
+										Hi {user.firstname}
 									</Typography>
-								</MenuItem>
-							))}
+									<Divider
+										sx={{
+											mt: 1,
+											mb: 1,
+											borderColor: "primary.dark",
+										}}
+									/>
+								</Box>
+							)}
+
+							{/* Only Return MenuItems That Make Sense For The Situation */}
+							{settings.map((setting) => {
+								// if the user is logged in, do not render the log in and register options
+								if (
+									token &&
+									user &&
+									(setting === "Log In" ||
+										setting === "Register")
+								) {
+									return null;
+								} else if (
+									// if the user is not logged in, do not render the profile and log out options
+									(!token || !user) &&
+									(setting === "Profile" ||
+										setting === "Log Out")
+								) {
+									return null;
+								}
+								return (
+									<MenuItem
+										key={setting}
+										onClick={handleCloseUserMenu}
+									>
+										<Typography
+											textAlign="center"
+											component={Link}
+											to={`/${setting
+												.replace(" ", "")
+												.toLowerCase()}`}
+											sx={{
+												textDecoration: "none",
+												color: "inherit",
+											}}
+										>
+											{setting}
+										</Typography>
+									</MenuItem>
+								);
+							})}
 						</Menu>
 					</Box>
 				</Toolbar>

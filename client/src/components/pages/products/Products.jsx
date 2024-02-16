@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
 import { Grid, Stack } from "@mui/material";
-import { SearchBar, ProductItem, Loading, Error } from "../../components";
-import { useGetProductsQuery } from "../../api/productApi";
+import { SearchBar, ProductItem, Loading, Error } from "../../../components";
+import { useGetProductsQuery } from "../../../api/productApi";
 
 const RenderProducts = ({ products }) => {
 	const [searchString, setSearchString] = useState("");
