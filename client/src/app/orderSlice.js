@@ -42,7 +42,6 @@ const orderSlice = createSlice({
     builder.addMatcher(
       orderApi.endpoints.remove.matchFulfilled,
       (state, { payload }) => {
-        console.log(payload);
         state.order = payload.order.order;
         state.items = payload.order.items.map((item) => {
           return {

@@ -13,7 +13,6 @@ const Cart = () => {
   //get profile data which contains the user cart to store into slice
   const { data, isLoading } = useInCartQuery();
   const { order, items } = useSelector((state) => state.order);
-  console.log(order, items);
   const [updateUp] = useIncreaseMutation();
   const [updateDown] = useDecreaseMutation();
   const [removeItem] = useRemoveMutation();
