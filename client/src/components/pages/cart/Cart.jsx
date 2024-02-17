@@ -8,9 +8,11 @@ import {
   useCheckoutMutation,
 } from "../../../api/orderApi";
 import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 
 const Cart = () => {
   //get profile data which contains the user cart to store into slice
+  const { token } = useSelector((state) => state.user);
   const { data, isLoading } = useInCartQuery();
   const { order, items } = useSelector((state) => state.order);
   const [updateUp] = useIncreaseMutation();
@@ -18,22 +20,53 @@ const Cart = () => {
   const [removeItem] = useRemoveMutation();
   const [cancel] = useCancelMutation();
   const [checkout] = useCheckoutMutation();
+  const [cart, setCart] = useState([]);
+
+  useEffect(() => {
+    const updateCart = () => {
+      setCart(Object.values(JSON.parse(window.sessionStorage.cart)));
+    };
+    if (window.sessionStorage.cart) updateCart();
+  }, []);
+
   const deleteFromCart = (e) => {
-    removeItem(Number(e.target.id));
+    if (token) removeItem(Number(e.target.id));
+    else {
+      const cart = JSON.parse(window.sessionStorage.cart);
+      delete cart[e.target.id];
+      window.sessionStorage.setItem("cart", JSON.stringify(cart));
+      setCart(Object.values(JSON.parse(window.sessionStorage.cart)));
+    }
   };
   const increase = (e) => {
-    updateUp(Number(e.target.id));
+    if (token) updateUp(Number(e.target.id));
+    else {
+      const cart = JSON.parse(window.sessionStorage.cart);
+      cart[e.target.id].quantity++;
+      window.sessionStorage.setItem("cart", JSON.stringify(cart));
+      setCart(Object.values(JSON.parse(window.sessionStorage.cart)));
+    }
   };
   const decrease = (e) => {
-    updateDown(Number(e.target.id));
+    if (token) updateDown(Number(e.target.id));
+    else {
+      const cart = JSON.parse(window.sessionStorage.cart);
+      cart[e.target.id].quantity--;
+      window.sessionStorage.setItem("cart", JSON.stringify(cart));
+      setCart(Object.values(JSON.parse(window.sessionStorage.cart)));
+    }
   };
   const cancelOrder = () => {
-    cancel();
+    if (token) cancel();
+    else {
+      window.sessionStorage.removeItem("cart");
+      setCart([]);
+    }
   };
   const checkoutOrder = () => {
-    checkout();
+    if (token) checkout();
   };
-  return (
+  return token ? (
     <Stack
       sx={{
         width: "100%",
@@ -85,6 +118,35 @@ const Cart = () => {
         </div>
       )}
     </Stack>
+  ) : (
+    <>
+      {window.sessionStorage.cart && (
+        <>
+          <button onClick={cancelOrder}>Cancel Order</button>
+        </>
+      )}
+      {window.sessionStorage.cart &&
+        cart.map((item) => {
+          return (
+            <div key={item.id}>
+              <h3>{item.name}</h3>
+              <img src={item.image} alt={item.name} />
+              <div>Price: ${item.price}</div>
+              <div>Quantity: x{item.quantity}</div>
+              <button id={item.id} onClick={(e) => deleteFromCart(e)}>
+                Remove
+              </button>
+              <button id={item.id} onClick={(e) => increase(e)}>
+                Increase
+              </button>
+              <button id={item.id} onClick={(e) => decrease(e)}>
+                Decrease
+              </button>
+            </div>
+          );
+        })}
+      Login to checkout
+    </>
   );
 };
 
