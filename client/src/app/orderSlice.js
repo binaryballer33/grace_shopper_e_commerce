@@ -64,7 +64,7 @@ const orderSlice = createSlice({
     builder.addMatcher(
       orderApi.endpoints.add.matchFulfilled,
       (state, { payload }) => {
-        console.log(payload)
+        console.log(payload);
         state.order = payload.order.order;
         state.items = payload.order.items.map((item) => {
           return {
@@ -74,6 +74,13 @@ const orderSlice = createSlice({
             itemDescription: item.itemInfo,
           };
         });
+      }
+    );
+    builder.addMatcher(
+      orderApi.endpoints.initalAdd.matchFulfilled,
+      (state, { payload }) => {
+        state.order = payload.order.order;
+        state.items = payload.order.orderDetailsWithDescriptions;
       }
     );
   },
