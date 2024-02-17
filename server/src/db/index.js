@@ -500,7 +500,7 @@ export const initialAdd = async (id, cart) => {
         total,
       },
     });
-    return order;
+    return await getIncartOrder(id);
   } catch (error) {
     console.error(error);
   }

@@ -78,3 +78,11 @@ export function getIncreaseCountRoute() {
 export function getDecreaseCountRoute() {
   return "/cart/updateDown";
 }
+
+export function getAddToCartRoute() {
+  return "/cart/add";
+}
+
+export function getInitialAddRoute() {
+  return "/cart/addCart";
+}

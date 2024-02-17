@@ -47,7 +47,7 @@ const orderSlice = createSlice({
           return {
             orderId: item.orderId,
             productId: item.productId,
-            quanitity: item.quantity,
+            quantity: item.quantity,
             itemDescription: item.itemInfo,
           };
         });
@@ -61,6 +61,28 @@ const orderSlice = createSlice({
       state.order = {};
       state.items = [];
     });
+    builder.addMatcher(
+      orderApi.endpoints.add.matchFulfilled,
+      (state, { payload }) => {
+        console.log(payload);
+        state.order = payload.order.order;
+        state.items = payload.order.items.map((item) => {
+          return {
+            orderId: item.orderId,
+            productId: item.productId,
+            quantity: item.quantity,
+            itemDescription: item.itemInfo,
+          };
+        });
+      }
+    );
+    builder.addMatcher(
+      orderApi.endpoints.initalAdd.matchFulfilled,
+      (state, { payload }) => {
+        state.order = payload.order.order;
+        state.items = payload.order.orderDetailsWithDescriptions;
+      }
+    );
   },
 });
 

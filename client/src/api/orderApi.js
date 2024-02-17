@@ -5,6 +5,8 @@ import {
   getIncreaseCountRoute,
   getRemoveItemRoute,
   getInCartRoute,
+  getAddToCartRoute,
+  getInitialAddRoute,
 } from "../utils/constant.js";
 import api from "./api.js";
 
@@ -44,6 +46,20 @@ const orderApi = api.injectEndpoints({
         method: "PUT",
       }),
     }),
+    add: builder.mutation({
+      query: (productid) => ({
+        url: getAddToCartRoute(),
+        method: "PUT",
+        body: { productid },
+      }),
+    }),
+    initalAdd: builder.mutation({
+      query: (cart) => ({
+        url: getInitialAddRoute(),
+        method: "PUT",
+        body: { cart },
+      }),
+    }),
   }),
 });
 
@@ -54,6 +70,8 @@ export const {
   useRemoveMutation,
   useCancelMutation,
   useCheckoutMutation,
+  useAddMutation,
+  useInitalAddMutation,
 } = orderApi;
 
 export default orderApi;
