@@ -82,3 +82,7 @@ export function getDecreaseCountRoute() {
 export function getAddToCartRoute() {
   return "/cart/add";
 }
+
+export function getInitialAddRoute() {
+  return "/cart/addCart";
+}
