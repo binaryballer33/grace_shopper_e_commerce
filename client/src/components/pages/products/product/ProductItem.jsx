@@ -1,94 +1,97 @@
 /* eslint-disable react/prop-types */
-import {
-  Box,
-  Card,
-  CardMedia,
-  Grid,
-  Typography,
-  Button,
-  Stack,
-  Tooltip,
-} from "@mui/material";
+import { useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
+import {
+	Box,
+	Card,
+	CardMedia,
+	Grid,
+	Typography,
+	Button,
+	Stack,
+	Tooltip,
+} from "@mui/material";
 import { capitalize } from "../../../../utils/helper_functions";
 import { useAddMutation } from "../../../../api/orderApi";
-import { useSelector } from "react-redux";
 
-const ProductItem = ({ product, ...props }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const isProductPage = location.pathname.includes("/product/");
-  let productDescription =
-    !isProductPage && product.description.length > 60
-      ? product.description.slice(0, 60) + "..."
-      : product.description;
-  productDescription = capitalize(productDescription);
-  let productName = capitalize(product.name);
-  
-  const [addItem] = useAddMutation();
-  const { token } = useSelector((state) => state.user);
-  const add = (e) => {
-    e.preventDefault();
-    //if user is logged in add item to cart, validation to check if item in cart not made
-    if (token) addItem(Number(e.target.id));
-    //if guest is adding to cart, add to session storage, this data will be sent once use logs in or registers
-    else {
-      if (window.sessionStorage.cart) {
-        const data = JSON.parse(window.sessionStorage.cart);
-        if (data[e.target.id]) data[e.target.id].quantity++;
-        else
-          data[e.target.id] = {
-            quantity: 1,
-            name: e.target.name,
-            price: Number(e.target.title),
-            id: Number(e.target.id),
-            image: e.target.value,
-          };
-        window.sessionStorage.setItem("cart", JSON.stringify(data));
-      } else {
-        window.sessionStorage.setItem(
-          "cart",
-          JSON.stringify({
-            [e.target.id]: {
-              quantity: 1,
-              name: e.target.name,
-              price: Number(e.target.title),
-              id: Number(e.target.id),
-              image: e.target.value,
-            },
-          })
-        );
-      }
-    }
-  };
+const ProductItem = ({ product, quantity, ...props }) => {
+	const navigate = useNavigate();
+	const location = useLocation();
+	const isProductPage = location.pathname.includes("/product/");
 
-  // navigate to the product page if the user is not already on the product page
-  const handleClick = () => {
-    isProductPage ? "" : navigate(`/product/${product.id}`);
-  };
+	// text transformation
+	let productDescription =
+		!isProductPage && product.description.length > 60
+			? product.description.slice(0, 60) + "..."
+			: product.description;
+	productDescription = capitalize(productDescription);
+	let productName = capitalize(product.name);
 
-  return (
-    <Grid item>
-      {/* trick to make our components behave like MUI components and inherit their props */}
-      <Box {...props} key={product.id}>
-        {/* card with a image, some content and some actions like add to cart */}
-        <Tooltip title={productName} placement="top">
-          <Card
-            elevation={10}
-            sx={{
-              height: isProductPage ? 600 : 500,
-            }}
-          >
-            {/* card image */}
-            <CardMedia
-              image={product.image}
-              alt={productName}
-              sx={{
-                height: 320,
-                objectFit: "fill", // makes the image fit perfectly into the card
-              }}
-              component="img"
-            />
+	// add to cart handleClick
+	const [addItem] = useAddMutation();
+	const { token } = useSelector((state) => state.user);
+	const add = (e) => {
+		e.preventDefault();
+		//if user is logged in add item to cart, validation to check if item in cart not made
+		if (token) addItem(Number(e.target.id));
+		//if guest is adding to cart, add to session storage, this data will be sent once use logs in or registers
+		else {
+			if (window.sessionStorage.cart) {
+				const data = JSON.parse(window.sessionStorage.cart);
+				if (data[e.target.id]) data[e.target.id].quantity++;
+				else
+					data[e.target.id] = {
+						quantity: 1,
+						name: e.target.name,
+						price: Number(e.target.title),
+						id: Number(e.target.id),
+						image: e.target.value,
+					};
+				window.sessionStorage.setItem("cart", JSON.stringify(data));
+			} else {
+				window.sessionStorage.setItem(
+					"cart",
+					JSON.stringify({
+						[e.target.id]: {
+							quantity: 1,
+							name: e.target.name,
+							price: Number(e.target.title),
+							id: Number(e.target.id),
+							image: e.target.value,
+						},
+					})
+				);
+			}
+		}
+	};
+
+	// navigate to the product page if the user is not already on the product page
+	const handleClick = () => {
+		isProductPage ? "" : navigate(`/product/${product.id}`);
+	};
+
+	return (
+		<Grid item>
+			{/* trick to make our components behave like MUI components and inherit their props */}
+			<Box {...props} key={product.id}>
+				{/* card with a image, some content and some actions like add to cart */}
+				<Tooltip title={productName} placement="top">
+					<Card
+						elevation={10}
+						sx={{
+							height: isProductPage ? 600 : 500,
+						}}
+					>
+						{/* card image */}
+						<CardMedia
+							image={product.image}
+							alt={productName}
+							sx={{
+								height: 320,
+								objectFit: "fill", // makes the image fit perfectly into the card
+							}}
+							component="img"
+						/>
 
 						{/* text inside of the card */}
 						<Stack
@@ -141,15 +144,19 @@ const ProductItem = ({ product, ...props }) => {
 									</Typography>
 								</Typography>
 								<Typography variant="body1" fontWeight={550}>
-									Quantity:{" "}
+									{location.pathname.includes("/order")
+										? "Quantity: "
+										: "In Stock: "}
 									<Typography
 										component="span"
 										fontWeight={550}
 										sx={{ color: "primary.dark" }}
 									>
-										{product.count}
+										{quantity || product.count}
 									</Typography>
 								</Typography>
+
+								{/* add to cart button */}
 								<button
 									id={product.id}
 									name={product.name}
