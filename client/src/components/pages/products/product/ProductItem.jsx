@@ -10,14 +10,19 @@ import {
 	Button,
 	Stack,
 	Tooltip,
+	IconButton,
 } from "@mui/material";
+import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+import RemoveIcon from "@mui/icons-material/Remove";
 import { capitalize } from "../../../../utils/helper_functions";
 import { useAddMutation } from "../../../../api/orderApi";
+import { useState } from "react";
 
 const ProductItem = ({ product, quantity, ...props }) => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const isProductPage = location.pathname.includes("/product/");
+	const [hovered, setHovered] = useState(false); // State to track hover state
 
 	// text transformation
 	let productDescription =
@@ -80,6 +85,7 @@ const ProductItem = ({ product, quantity, ...props }) => {
 						elevation={10}
 						sx={{
 							height: isProductPage ? 600 : 500,
+							position: "relative",
 						}}
 					>
 						{/* card image */}
@@ -89,9 +95,66 @@ const ProductItem = ({ product, quantity, ...props }) => {
 							sx={{
 								height: 320,
 								objectFit: "fill", // makes the image fit perfectly into the card
+								transition: "opacity 0.3s ease", // Add this line
+								"&:hover": {
+									opacity: 0.2,
+								},
 							}}
 							component="img"
+							onMouseEnter={() => setHovered(true)} // Set hovered to true on mouse enter
+							onMouseLeave={() => setHovered(false)} // Set hovered to false on mouse leave
 						/>
+
+						{/* add to cart button */}
+						{hovered && ( // Render IconButton when hovered is true
+							<IconButton
+								onClick={(event) => add(event)}
+								sx={{
+									position: "absolute",
+									top: "35%",
+									right: "10%",
+									transform: "translate(-50%, -50%)",
+									opacity: 1, // Change opacity to make it visible
+									transition: "opacity 0.3s ease",
+								}}
+							>
+								<Tooltip title="Checkout" placement="bottom">
+									<AddShoppingCartIcon
+										sx={{
+											color: "primary.main",
+											fontSize: 50,
+										}}
+									/>
+								</Tooltip>
+							</IconButton>
+						)}
+
+						{/* remove from cart button */}
+						{hovered && (
+							<IconButton
+								sx={{
+									position: "absolute",
+									top: "35%",
+									left: "25%",
+									transform: "translate(-50%, -50%)",
+									opacity: 1, // Change opacity to make it visible
+									transition: "opacity 0.3s ease",
+								}}
+								onClick={() => {}}
+							>
+								<Tooltip
+									title="Delete Reservation"
+									placement="bottom"
+								>
+									<RemoveIcon
+										sx={{
+											color: "primary.main",
+											fontSize: 50,
+										}}
+									/>
+								</Tooltip>
+							</IconButton>
+						)}
 
 						{/* text inside of the card */}
 						<Stack
@@ -126,6 +189,8 @@ const ProductItem = ({ product, quantity, ...props }) => {
 							>
 								{productDescription}
 							</Typography>
+
+							{/* Card In Stock and Card Price */}
 							<Box
 								sx={{
 									display: "flex",
@@ -155,17 +220,6 @@ const ProductItem = ({ product, quantity, ...props }) => {
 										{quantity || product.count}
 									</Typography>
 								</Typography>
-
-								{/* add to cart button */}
-								<button
-									id={product.id}
-									name={product.name}
-									title={product.price}
-									value={product.image}
-									onClick={(e) => add(e)}
-								>
-									ADD TO CART
-								</button>
 							</Box>
 						</Stack>
 					</Card>

@@ -10,6 +10,11 @@ import OrderItem from "../../pages/orders/order/OrderItem";
 const ProfileSuccess = ({ user }) => {
 	const { data, isLoading, isError, error, refetch } = useGetProfileQuery();
 	const orders = useSelector((state) => state.user.orders);
+	const getOrderTotal = (order) => {
+		return order.itemInfo.reduce((acc, item) => {
+			return acc + item.itemDescription.price * item.quantity;
+		}, 0);
+	};
 
 	/*
 	 * fixes the issue when someone logs out and then logs in with a different account
@@ -118,6 +123,7 @@ const ProfileSuccess = ({ user }) => {
 										<OrderItem
 											key={order.id}
 											order={order}
+											orderTotal={getOrderTotal(order)}
 										/>
 									);
 								})}
@@ -142,6 +148,7 @@ const ProfileSuccess = ({ user }) => {
 										<OrderItem
 											key={order.id}
 											order={order}
+											orderTotal={getOrderTotal(order)}
 										/>
 									);
 								})}
@@ -166,6 +173,7 @@ const ProfileSuccess = ({ user }) => {
 										<OrderItem
 											key={order.id}
 											order={order}
+											orderTotal={getOrderTotal(order)}
 										/>
 									);
 								})}

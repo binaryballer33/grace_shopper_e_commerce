@@ -12,7 +12,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { USER_CREDENTIALS } from "../../../../utils/constant";
 
-const OrderItem = ({ order, ...props }) => {
+const OrderItem = ({ order, orderTotal, ...props }) => {
 	const navigate = useNavigate();
 
 	const handleClick = () => {
@@ -103,7 +103,6 @@ const OrderItem = ({ order, ...props }) => {
 								}}
 							>
 								<Typography variant="body1" fontWeight={550}>
-									Order Total:{" "}
 									<Typography
 										component="span"
 										fontWeight={550}
@@ -111,7 +110,9 @@ const OrderItem = ({ order, ...props }) => {
 											color: "primary.main",
 										}}
 									>
-										${order.total}
+										{`Order Total: $${
+											orderTotal || order.total
+										}`}
 									</Typography>
 								</Typography>
 							</Box>

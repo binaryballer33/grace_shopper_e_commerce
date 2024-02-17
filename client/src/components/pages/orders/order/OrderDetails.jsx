@@ -20,14 +20,12 @@ const OrderDetails = () => {
 	const navigate = useNavigate();
 	const currentSessionData =
 		JSON.parse(window.sessionStorage.getItem(USER_CREDENTIALS)) || [];
+	const order = currentSessionData.selectedOrder;
 
 	// get order total
-	const orderTotal = currentSessionData.selectedOrder.itemInfo.reduce(
-		(acc, item) => {
-			return acc + item.itemDescription.price * item.quantity;
-		},
-		0
-	);
+	const orderTotal = order.itemInfo.reduce((acc, item) => {
+		return acc + item.itemDescription.price * item.quantity;
+	}, 0);
 
 	return (
 		<Stack
@@ -54,7 +52,7 @@ const OrderDetails = () => {
 				</IconButton>
 
 				<Typography variant="h4" color="primary.main">
-					Order Id: {currentSessionData.selectedOrder.id}
+					Order Id: {order.id}
 				</Typography>
 				<Typography
 					variant="h4"
@@ -65,7 +63,7 @@ const OrderDetails = () => {
 			</Stack>
 
 			<Grid container gap={2} justifyContent="center">
-				{currentSessionData.selectedOrder.itemInfo.map((item) => {
+				{order.itemInfo.map((item) => {
 					return (
 						<Grid item key={item.productId}>
 							<ProductItem
@@ -103,39 +101,36 @@ const OrderDetails = () => {
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{currentSessionData.selectedOrder.itemInfo.map(
-							(item) => (
-								<TableRow
-									key={item.productId}
-									sx={{
-										"&:last-child td, &:last-child th": {
-											border: 0,
-										},
-									}}
-								>
-									<TableCell component="th" scope="row">
-										{item.orderId}
-									</TableCell>
-									<TableCell align="right">
-										{item.productId}
-									</TableCell>
-									<TableCell align="right">
-										{item.itemDescription.name}
-									</TableCell>
-									<TableCell align="right">
-										{item.itemDescription.price}
-									</TableCell>
-									<TableCell align="right">
-										{item.quantity}
-									</TableCell>
-									<TableCell align="right">
-										$
-										{item.itemDescription.price *
-											item.quantity}
-									</TableCell>
-								</TableRow>
-							)
-						)}
+						{order.itemInfo.map((item) => (
+							<TableRow
+								key={item.productId}
+								sx={{
+									"&:last-child td, &:last-child th": {
+										border: 0,
+									},
+								}}
+							>
+								<TableCell component="th" scope="row">
+									{item.orderId}
+								</TableCell>
+								<TableCell align="right">
+									{item.productId}
+								</TableCell>
+								<TableCell align="right">
+									{item.itemDescription.name}
+								</TableCell>
+								<TableCell align="right">
+									{item.itemDescription.price}
+								</TableCell>
+								<TableCell align="right">
+									{item.quantity}
+								</TableCell>
+								<TableCell align="right">
+									$
+									{item.itemDescription.price * item.quantity}
+								</TableCell>
+							</TableRow>
+						))}
 					</TableBody>
 				</Table>
 			</TableContainer>
