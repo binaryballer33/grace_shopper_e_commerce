@@ -147,7 +147,7 @@ cartRouter.put("/addCart", verifyToken, async (req, res, next) => {
       ? res.status(200).send({ message: "Empty cart" })
       : res.status(201).send({
           message: "Successfully updated cart",
-          cart: await initialAdd(req.user.id, req.body.cart),
+          order: await initialAdd(req.user.id, req.body.cart),
         });
   } catch (error) {
     next(error);
