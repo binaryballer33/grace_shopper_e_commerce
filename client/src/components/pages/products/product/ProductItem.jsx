@@ -12,15 +12,47 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import { capitalize } from "../../../../utils/helper_functions";
 import { useAddMutation } from "../../../../api/orderApi";
+import { useSelector } from "react-redux";
 
 const ProductItem = ({ product, ...props }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const isProductPage = location.pathname.includes("/product/");
   const [addItem] = useAddMutation();
+  const { token } = useSelector((state) => state.user);
   const add = (e) => {
     e.preventDefault();
-    addItem(Number(e.target.id));
+    //if user is logged in add item to cart, validation to check if item in cart not made
+    if (token) addItem(Number(e.target.id));
+    //if guest is adding to cart, add to session storage, this data will be sent once use logs in or registers
+    else {
+      if (window.sessionStorage.cart) {
+        const data = JSON.parse(window.sessionStorage.cart);
+        if (data[e.target.id]) data[e.target.id].quantity++;
+        else
+          data[e.target.id] = {
+            quantity: 1,
+            name: e.target.name,
+            price: Number(e.target.title),
+            id: Number(e.target.id),
+            image: e.target.value,
+          };
+        window.sessionStorage.setItem("cart", JSON.stringify(data));
+      } else {
+        window.sessionStorage.setItem(
+          "cart",
+          JSON.stringify({
+            [e.target.id]: {
+              quantity: 1,
+              name: e.target.name,
+              price: Number(e.target.title),
+              id: Number(e.target.id),
+              image: e.target.value,
+            },
+          })
+        );
+      }
+    }
   };
   let productDescription =
     !isProductPage && product.description.length > 60
@@ -112,7 +144,13 @@ const ProductItem = ({ product, ...props }) => {
                     {product.count}
                   </Typography>
                 </Typography>
-                <button id={product.id} onClick={(e) => add(e)}>
+                <button
+                  id={product.id}
+                  name={product.name}
+                  title={product.price}
+                  value={product.image}
+                  onClick={(e) => add(e)}
+                >
                   ADD TO CART
                 </button>
               </Box>
