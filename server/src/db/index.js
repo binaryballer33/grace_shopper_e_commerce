@@ -152,6 +152,32 @@ export async function createProductInOrder(productInOrder) {
   }
 }
 
+export const getIncartOrder = async (id) => {
+  const order = await prisma.orders.findFirst({
+    where: {
+      userId: id,
+      status: "inCart",
+    },
+  });
+  if (!order) return { val: 1 };
+  //get all the order items of the orders
+  const orderDetails = await prisma.productsInOrder.findMany({
+    where: { orderId: order.id },
+  });
+  if (!orderDetails.length) return { val: 2, order };
+  const orderDetailsWithDescriptions = [];
+  //get the items description
+  for (let orderDetail of orderDetails) {
+    orderDetailsWithDescriptions.push({
+      ...orderDetail,
+      itemDescription: await prisma.products.findFirst({
+        where: { id: orderDetail.productId },
+      }),
+    });
+  }
+  return { order, orderDetailsWithDescriptions };
+};
+
 export const getOrders = async (id) => {
   //get all fulfilled/cancelled/incart orders of user
   const orders = await prisma.orders.findMany({
@@ -474,7 +500,7 @@ export const initialAdd = async (id, cart) => {
         total,
       },
     });
-    return order;
+    return await getIncartOrder(id);
   } catch (error) {
     console.error(error);
   }
