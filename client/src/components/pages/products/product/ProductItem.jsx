@@ -33,9 +33,9 @@ const ProductItem = ({ product, ...props }) => {
           data[e.target.id] = {
             quantity: 1,
             name: e.target.name,
-            price: Number(e.target.title),
+            price: Number(e.target.dataset.price),
             id: Number(e.target.id),
-            image: e.target.value,
+            image: e.target.dataset.image,
           };
         window.sessionStorage.setItem("cart", JSON.stringify(data));
       } else {
@@ -45,9 +45,9 @@ const ProductItem = ({ product, ...props }) => {
             [e.target.id]: {
               quantity: 1,
               name: e.target.name,
-              price: Number(e.target.title),
+              price: Number(e.target.dataset.price),
               id: Number(e.target.id),
-              image: e.target.value,
+              image: e.target.dataset.image,
             },
           })
         );
@@ -147,8 +147,8 @@ const ProductItem = ({ product, ...props }) => {
                 <button
                   id={product.id}
                   name={product.name}
-                  title={product.price}
-                  value={product.image}
+                  data-price={product.price}
+                  data-image={product.image}
                   onClick={(e) => add(e)}
                 >
                   ADD TO CART
