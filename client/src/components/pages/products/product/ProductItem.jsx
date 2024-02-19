@@ -11,8 +11,9 @@ import {
 } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import { capitalize } from "../../../../utils/helper_functions";
-import { useAddMutation } from "../../../../api/orderApi";
+import { useAddMutation, useInCartQuery } from "../../../../api/orderApi";
 import { useSelector } from "react-redux";
+import { useDecreaseMutation } from "../../../../api/orderApi";
 
 const ProductItem = ({ product, ...props }) => {
   const navigate = useNavigate();
@@ -20,10 +21,18 @@ const ProductItem = ({ product, ...props }) => {
   const isProductPage = location.pathname.includes("/product/");
   const [addItem] = useAddMutation();
   const { token } = useSelector((state) => state.user);
+  //can prob remove this once session is made
+  const { data, isLoading } = useInCartQuery();
+  const { items } = useSelector((state) => state.order);
+  const [updateDown] = useDecreaseMutation();
   const remove = (e) => {
     e.preventDefault();
     if (token) {
-      console.log("need to work");
+      //will prob replace with session data check instead of state check, similar cart.jsx decrease function if item exist otherwise do nothing
+      for (let item of items) {
+        if (item.productId === Number(e.target.id))
+          return updateDown(Number(e.target.id));
+      }
     } else {
       //if cart does not exist do nothing
       if (!window.sessionStorage.cart) return;
