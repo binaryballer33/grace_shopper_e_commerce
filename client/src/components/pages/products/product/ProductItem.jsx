@@ -20,6 +20,25 @@ const ProductItem = ({ product, ...props }) => {
   const isProductPage = location.pathname.includes("/product/");
   const [addItem] = useAddMutation();
   const { token } = useSelector((state) => state.user);
+  const remove = (e) => {
+    e.preventDefault();
+    if (token) {
+      console.log("need to work");
+    } else {
+      //if cart does not exist do nothing
+      if (!window.sessionStorage.cart) return;
+      const data = JSON.parse(window.sessionStorage.cart);
+      //if item does not exist in cart do nothing
+      if (!data[e.target.id]) return;
+      //if item exist and quantity is 1 remove the item
+      if (data[e.target.id].quantity === 1) delete data[e.target.id];
+      //else reduce quantity by 1
+      else --data[e.target.id].quantity;
+      //update session
+      window.sessionStorage.setItem("cart", JSON.stringify(data));
+    }
+  };
+
   const add = (e) => {
     e.preventDefault();
     //if user is logged in add item to cart, validation to check if item in cart not made
@@ -152,6 +171,9 @@ const ProductItem = ({ product, ...props }) => {
                   onClick={(e) => add(e)}
                 >
                   ADD TO CART
+                </button>
+                <button id={product.id} onClick={(e) => remove(e)}>
+                  REMOVE FROM CART
                 </button>
               </Box>
             </Stack>
