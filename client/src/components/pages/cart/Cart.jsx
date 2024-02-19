@@ -51,6 +51,7 @@ const Cart = () => {
     if (token) updateDown(Number(e.target.id));
     else {
       const cart = JSON.parse(window.sessionStorage.cart);
+      if (cart[e.target.id].quantity < 2) return deleteFromCart(e);
       cart[e.target.id].quantity--;
       window.sessionStorage.setItem("cart", JSON.stringify(cart));
       setCart(Object.values(JSON.parse(window.sessionStorage.cart)));
