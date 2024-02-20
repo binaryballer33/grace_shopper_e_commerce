@@ -15,7 +15,7 @@ import {
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { capitalize } from "../../../../utils/helper_functions";
-import { useAddMutation } from "../../../../api/orderApi";
+import { useAddProductToCartMutation } from "../../../../api/orderApi";
 import { useState } from "react";
 
 const ProductItem = ({ product, quantity, ...props }) => {
@@ -33,12 +33,12 @@ const ProductItem = ({ product, quantity, ...props }) => {
 	let productName = capitalize(product.name);
 
 	// add to cart handleClick
-	const [addItem] = useAddMutation();
+	const [addProductToCart] = useAddProductToCartMutation();
 	const { token } = useSelector((state) => state.user);
 	const add = (e) => {
 		e.preventDefault();
 		//if user is logged in add item to cart, validation to check if item in cart not made
-		if (token) addItem(Number(e.target.id));
+		if (token) addProductToCart(Number(e.target.id));
 		//if guest is adding to cart, add to session storage, this data will be sent once use logs in or registers
 		else {
 			if (window.sessionStorage.cart) {
@@ -95,7 +95,7 @@ const ProductItem = ({ product, quantity, ...props }) => {
 							sx={{
 								height: 320,
 								objectFit: "fill", // makes the image fit perfectly into the card
-								transition: "opacity 0.3s ease", // Add this line
+								transition: "opacity 0.3s ease",
 								"&:hover": {
 									opacity: 0.2,
 								},

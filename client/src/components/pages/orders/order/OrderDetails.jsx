@@ -15,17 +15,13 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { USER_CREDENTIALS } from "../../../../utils/constant";
 import ProductItem from "../../products/product/ProductItem";
 import { useNavigate } from "react-router-dom";
+import { getOrderTotal } from "../../../../utils/helper_functions";
 
 const OrderDetails = () => {
 	const navigate = useNavigate();
 	const currentSessionData =
 		JSON.parse(window.sessionStorage.getItem(USER_CREDENTIALS)) || [];
 	const order = currentSessionData.selectedOrder;
-
-	// get order total
-	const orderTotal = order.itemInfo.reduce((acc, item) => {
-		return acc + item.itemDescription.price * item.quantity;
-	}, 0);
 
 	return (
 		<Stack
@@ -58,7 +54,7 @@ const OrderDetails = () => {
 					variant="h4"
 					sx={{ color: "primary.dark", ml: { xs: 0, md: 4 } }}
 				>
-					Order Total: ${orderTotal}
+					Order Total: ${getOrderTotal(order)}
 				</Typography>
 			</Stack>
 
@@ -100,7 +96,13 @@ const OrderDetails = () => {
 							<TableCell align="right">Order Total</TableCell>
 						</TableRow>
 					</TableHead>
-					<TableBody>
+					<TableBody
+						sx={{
+							"& tr:nth-of-type(odd)": {
+								backgroundColor: "#f3f3f3",
+							},
+						}}
+					>
 						{order.itemInfo.map((item) => (
 							<TableRow
 								key={item.productId}

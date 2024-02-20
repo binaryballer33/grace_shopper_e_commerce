@@ -57,6 +57,7 @@ const userSlice = createSlice({
 		builder.addMatcher(userApi.endpoints.logout.matchFulfilled, (state) => {
 			state.token = "";
 			state.user = {};
+			state.orders = [];
 			window.sessionStorage.removeItem(USER_CREDENTIALS);
 		});
 	},
