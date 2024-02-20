@@ -15,7 +15,11 @@ import {
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { capitalize } from "../../../../utils/helper_functions";
-import { useAddProductToCartMutation } from "../../../../api/orderApi";
+import {
+	useAddProductToCartMutation,
+	useDecreaseProductQuantityMutation,
+	useGetCartQuery,
+} from "../../../../api/orderApi";
 import { useState } from "react";
 
 const ProductItem = ({ product, quantity, ...props }) => {
@@ -35,9 +39,17 @@ const ProductItem = ({ product, quantity, ...props }) => {
 	// add to cart handleClick
 	const [addProductToCart] = useAddProductToCartMutation();
 	const { token } = useSelector((state) => state.user);
-	const add = (e) => {
+	const increaseProductQuantityHandler = (e) => {
 		e.preventDefault();
 		//if user is logged in add item to cart, validation to check if item in cart not made
+		console.log(
+			"e.target.id, e.target.name, e.target.title, e.target.value",
+			e.target.id,
+			e.target.name,
+			e.target.title,
+			e.target.value
+		);
+
 		if (token) addProductToCart(Number(e.target.id));
 		//if guest is adding to cart, add to session storage, this data will be sent once use logs in or registers
 		else {
@@ -67,6 +79,33 @@ const ProductItem = ({ product, quantity, ...props }) => {
 					})
 				);
 			}
+		}
+	};
+
+	//can prob remove this once session is made
+	const { data, isLoading, error } = useGetCartQuery(); // figure out if we need to use these return values
+	const { items } = useSelector((state) => state.order);
+	const [descreaseProductQuantity] = useDecreaseProductQuantityMutation();
+	const decreaseProductQuantityHandler = (e) => {
+		e.preventDefault();
+		if (token) {
+			//will prob replace with session data check instead of state check, similar cart.jsx decrease function if item exist otherwise do nothing
+			for (let item of items) {
+				if (item.productId === Number(e.target.id))
+					return descreaseProductQuantity(Number(e.target.id));
+			}
+		} else {
+			//if cart does not exist do nothing
+			if (!window.sessionStorage.cart) return;
+			const data = JSON.parse(window.sessionStorage.cart);
+			//if item does not exist in cart do nothing
+			if (!data[e.target.id]) return;
+			//if item exist and quantity is 1 remove the item
+			if (data[e.target.id].quantity === 1) delete data[e.target.id];
+			//else reduce quantity by 1
+			else --data[e.target.id].quantity;
+			//update session
+			window.sessionStorage.setItem("cart", JSON.stringify(data));
 		}
 	};
 
@@ -108,7 +147,9 @@ const ProductItem = ({ product, quantity, ...props }) => {
 						{/* add to cart button */}
 						{hovered && ( // Render IconButton when hovered is true
 							<IconButton
-								onClick={(event) => add(event)}
+								onClick={(event) =>
+									increaseProductQuantityHandler(event)
+								}
 								sx={{
 									position: "absolute",
 									top: "35%",
@@ -140,7 +181,9 @@ const ProductItem = ({ product, quantity, ...props }) => {
 									opacity: 1, // Change opacity to make it visible
 									transition: "opacity 0.3s ease",
 								}}
-								onClick={() => {}}
+								onClick={(event) =>
+									decreaseProductQuantityHandler(event)
+								}
 							>
 								<Tooltip
 									title="Delete Reservation"
@@ -209,7 +252,8 @@ const ProductItem = ({ product, quantity, ...props }) => {
 									</Typography>
 								</Typography>
 								<Typography variant="body1" fontWeight={550}>
-									{location.pathname.includes("/order")
+									{location.pathname.includes("/order") ||
+									location.pathname.includes("/cart")
 										? "Quantity: "
 										: "In Stock: "}
 									<Typography

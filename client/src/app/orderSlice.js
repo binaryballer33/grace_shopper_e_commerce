@@ -1,12 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 import orderApi from "../api/orderApi";
+import { USER_CREDENTIALS } from "../utils/constant";
 
 // TODO: edit this later, probaly split order and cart into two slices
 const orderSlice = createSlice({
 	name: "orderSlice",
 	initialState: {
 		order: {},
-		items: [],
+		items: [], // this is products in order
 	},
 	extraReducers: (builder) => {
 		builder.addMatcher(
@@ -14,6 +15,22 @@ const orderSlice = createSlice({
 			(state, { payload }) => {
 				state.order = payload.order.order;
 				state.items = payload.order.orderDetailsWithDescriptions;
+
+				// get the current session storage
+				const sessionStorage = JSON.parse(
+					window.sessionStorage.getItem(USER_CREDENTIALS)
+				);
+
+				// modify the current session storage
+				sessionStorage.order = payload.order.order;
+				sessionStorage.productsInOrder =
+					payload.order.orderDetailsWithDescriptions;
+
+				// update session storage to include orders and products in order
+				window.sessionStorage.setItem(
+					USER_CREDENTIALS,
+					JSON.stringify(sessionStorage)
+				);
 			}
 		);
 		builder.addMatcher(
