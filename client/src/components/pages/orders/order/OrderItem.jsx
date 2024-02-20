@@ -19,6 +19,7 @@ const OrderItem = ({ order, orderTotal, ...props }) => {
 		const currentSessionData =
 			JSON.parse(window.sessionStorage.getItem(USER_CREDENTIALS)) || [];
 		currentSessionData.selectedOrder = order;
+
 		window.sessionStorage.setItem(
 			USER_CREDENTIALS,
 			JSON.stringify(currentSessionData)

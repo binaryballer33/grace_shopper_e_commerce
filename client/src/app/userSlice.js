@@ -35,10 +35,16 @@ const userSlice = createSlice({
 				state.user = action.payload.user;
 				state.orders = action.payload.orders;
 
+				// get the current session storage and update it with the new order
+				const sessionStorage = JSON.parse(
+					window.sessionStorage.getItem(USER_CREDENTIALS)
+				);
+
 				// update session storage to include orders
 				window.sessionStorage.setItem(
 					USER_CREDENTIALS,
 					JSON.stringify({
+						...sessionStorage,
 						token: state.token,
 						user: state.user,
 						orders: state.orders,

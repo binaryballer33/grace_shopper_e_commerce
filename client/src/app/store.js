@@ -14,14 +14,14 @@ import orderReducer from "../app/orderSlice";
 
 // Create a Redux store
 export const store = configureStore({
-  reducer: {
-    [api.reducerPath]: api.reducer, // key reducer path, value reducer
-    product: productReducer,
-    user: userReducer,
-    order: orderReducer,
-  },
-  middleware: (getDefaultMiddleware) =>
-    import.meta.env.DEV
-      ? getDefaultMiddleware().concat(api.middleware, logger)
-      : getDefaultMiddleware().concat(api.middleware),
+	reducer: {
+		[api.reducerPath]: api.reducer, // key reducer path, value reducer
+		product: productReducer,
+		user: userReducer,
+		order: orderReducer,
+	},
+	middleware: (getDefaultMiddleware) =>
+		import.meta.env.DEV
+			? getDefaultMiddleware().concat(api.middleware)
+			: getDefaultMiddleware().concat(api.middleware),
 });
