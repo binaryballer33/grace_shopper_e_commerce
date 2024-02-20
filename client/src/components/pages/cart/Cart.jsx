@@ -212,17 +212,6 @@ const Cart = () => {
 		if (token) checkoutOrder();
 	};
 
-  return token ? (
-    <Stack
-      sx={{
-        width: "100%",
-        height: "100vh",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <Typography variant="h4">Cart</Typography>
-
 	// if user is logged in show LoggedInUserCart, else show LoggedOutUserCart
 	return token ? (
 		<LoggedInUserCart
