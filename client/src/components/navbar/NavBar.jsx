@@ -21,14 +21,17 @@ import navBarLogo from "../../assets/greenAppleLogo.avif";
 import { USER_CREDENTIALS } from "../../utils/constant";
 
 const NavBar = () => {
-	// links and account options
-	const pages = ["Testimonials", "Contact"];
-	const settings = ["Profile", "Cart", "Log In", "Register", "Log Out"];
-
 	// get the user credentials from the session storage
 	const { token, user } = JSON.parse(
 		window.sessionStorage.getItem(USER_CREDENTIALS)
 	) || { token: "", user: {} };
+
+	// links and account options
+	const pages = ["Testimonials", "Contact"];
+	// show the correct options based on the user's login status
+	const settings = token
+		? ["Cart", "Profile", "Log Out"]
+		: ["Cart", "Log In", "Register"];
 
 	// state variables
 	const [anchorElNav, setAnchorElNav] = useState(null);
@@ -149,7 +152,7 @@ const NavBar = () => {
 						</Stack>
 					</Typography>
 
-					{/* create the NavBar links */}
+					{/* create the NavBar links in the pages array */}
 					<Box
 						sx={{
 							flexGrow: 1,
@@ -176,7 +179,7 @@ const NavBar = () => {
 						))}
 					</Box>
 
-					{/* create the user settings menu */}
+					{/* create the user settings menu inside of the profile menu button */}
 					<Box sx={{ flexGrow: 0 }}>
 						<Tooltip title="Open settings">
 							<IconButton
@@ -226,25 +229,8 @@ const NavBar = () => {
 									/>
 								</Box>
 							)}
-
 							{/* Only Return MenuItems That Make Sense For The Situation */}
 							{settings.map((setting) => {
-								// if the user is logged in, do not render the log in and register options
-								if (
-									token &&
-									user &&
-									(setting === "Log In" ||
-										setting === "Register")
-								) {
-									return null;
-								} else if (
-									// if the user is not logged in, do not render the profile and log out options
-									(!token || !user) &&
-									(setting === "Profile" ||
-										setting === "Log Out")
-								) {
-									return null;
-								}
 								return (
 									<MenuItem
 										key={setting}

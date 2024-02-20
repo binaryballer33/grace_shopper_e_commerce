@@ -1,4 +1,6 @@
 /* eslint-disable react/prop-types */
+import { useSelector } from "react-redux";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Box,
   Card,
@@ -8,30 +10,89 @@ import {
   Button,
   Stack,
   Tooltip,
+  IconButton,
 } from "@mui/material";
-import { useNavigate, useLocation } from "react-router-dom";
+import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+import RemoveIcon from "@mui/icons-material/Remove";
 import { capitalize } from "../../../../utils/helper_functions";
-import { useAddMutation, useInCartQuery } from "../../../../api/orderApi";
-import { useSelector } from "react-redux";
-import { useDecreaseMutation } from "../../../../api/orderApi";
+import {
+  useAddProductToCartMutation,
+  useDecreaseProductQuantityMutation,
+  useGetCartQuery,
+} from "../../../../api/orderApi";
+import { useState } from "react";
 
-const ProductItem = ({ product, ...props }) => {
+const ProductItem = ({ product, quantity, ...props }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const isProductPage = location.pathname.includes("/product/");
-  const [addItem] = useAddMutation();
+  const [hovered, setHovered] = useState(false); // State to track hover state
+
+  // text transformation
+  let productDescription =
+    !isProductPage && product.description.length > 60
+      ? product.description.slice(0, 60) + "..."
+      : product.description;
+  productDescription = capitalize(productDescription);
+  let productName = capitalize(product.name);
+
+  // add to cart handleClick
+  const [addProductToCart] = useAddProductToCartMutation();
   const { token } = useSelector((state) => state.user);
+  const increaseProductQuantityHandler = (e) => {
+    e.preventDefault();
+    //if user is logged in add item to cart, validation to check if item in cart not made
+    console.log(
+      "e.target.id, e.target.name, e.target.title, e.target.value",
+      e.target.id,
+      e.target.name,
+      e.target.title,
+      e.target.value
+    );
+
+    if (token) addProductToCart(Number(e.target.id));
+    //if guest is adding to cart, add to session storage, this data will be sent once use logs in or registers
+    else {
+      if (window.sessionStorage.cart) {
+        const data = JSON.parse(window.sessionStorage.cart);
+        if (data[e.target.id]) data[e.target.id].quantity++;
+        else
+          data[e.target.id] = {
+            quantity: 1,
+            name: e.target.name,
+            price: Number(e.target.title),
+            id: Number(e.target.id),
+            image: e.target.value,
+          };
+        window.sessionStorage.setItem("cart", JSON.stringify(data));
+      } else {
+        window.sessionStorage.setItem(
+          "cart",
+          JSON.stringify({
+            [e.target.id]: {
+              quantity: 1,
+              name: e.target.name,
+              price: Number(e.target.title),
+              id: Number(e.target.id),
+              image: e.target.value,
+            },
+          })
+        );
+      }
+    }
+  };
+
   //can prob remove this once session is made
-  const { data, isLoading } = useInCartQuery();
+  const { data, isLoading, error } = useGetCartQuery(); // figure out if we need to use these return values
   const { items } = useSelector((state) => state.order);
-  const [updateDown] = useDecreaseMutation();
-  const remove = (e) => {
+  const [descreaseProductQuantity] = useDecreaseProductQuantityMutation();
+  const decreaseProductQuantityHandler = (e) => {
     e.preventDefault();
     if (token) {
       //will prob replace with session data check instead of state check, similar cart.jsx decrease function if item exist otherwise do nothing
       for (let item of items) {
         if (item.productId === Number(e.target.id))
-          return updateDown(Number(e.target.id));
+          return descreaseProductQuantity(Number(e.target.id));
       }
     } else {
       //if cart does not exist do nothing
@@ -48,48 +109,6 @@ const ProductItem = ({ product, ...props }) => {
     }
   };
 
-  const add = (e) => {
-    e.preventDefault();
-    //if user is logged in add item to cart, validation to check if item in cart not made
-    if (token) addItem(Number(e.target.id));
-    //if guest is adding to cart, add to session storage, this data will be sent once use logs in or registers
-    else {
-      if (window.sessionStorage.cart) {
-        const data = JSON.parse(window.sessionStorage.cart);
-        if (data[e.target.id]) data[e.target.id].quantity++;
-        else
-          data[e.target.id] = {
-            quantity: 1,
-            name: e.target.name,
-            price: Number(e.target.dataset.price),
-            id: Number(e.target.id),
-            image: e.target.dataset.image,
-          };
-        window.sessionStorage.setItem("cart", JSON.stringify(data));
-      } else {
-        window.sessionStorage.setItem(
-          "cart",
-          JSON.stringify({
-            [e.target.id]: {
-              quantity: 1,
-              name: e.target.name,
-              price: Number(e.target.dataset.price),
-              id: Number(e.target.id),
-              image: e.target.dataset.image,
-            },
-          })
-        );
-      }
-    }
-  };
-  let productDescription =
-    !isProductPage && product.description.length > 60
-      ? product.description.slice(0, 60) + "..."
-      : product.description;
-  productDescription = capitalize(productDescription);
-
-  let productName = capitalize(product.name);
-
   // navigate to the product page if the user is not already on the product page
   const handleClick = () => {
     isProductPage ? "" : navigate(`/product/${product.id}`);
@@ -105,6 +124,7 @@ const ProductItem = ({ product, ...props }) => {
             elevation={10}
             sx={{
               height: isProductPage ? 600 : 500,
+              position: "relative",
             }}
           >
             {/* card image */}
@@ -114,9 +134,63 @@ const ProductItem = ({ product, ...props }) => {
               sx={{
                 height: 320,
                 objectFit: "fill", // makes the image fit perfectly into the card
+                transition: "opacity 0.3s ease",
+                "&:hover": {
+                  opacity: 0.2,
+                },
               }}
               component="img"
+              onMouseEnter={() => setHovered(true)} // Set hovered to true on mouse enter
+              onMouseLeave={() => setHovered(false)} // Set hovered to false on mouse leave
             />
+
+            {/* add to cart button */}
+            {hovered && ( // Render IconButton when hovered is true
+              <IconButton
+                onClick={(event) => increaseProductQuantityHandler(event)}
+                sx={{
+                  position: "absolute",
+                  top: "35%",
+                  right: "10%",
+                  transform: "translate(-50%, -50%)",
+                  opacity: 1, // Change opacity to make it visible
+                  transition: "opacity 0.3s ease",
+                }}
+              >
+                <Tooltip title="Checkout" placement="bottom">
+                  <AddShoppingCartIcon
+                    sx={{
+                      color: "primary.main",
+                      fontSize: 50,
+                    }}
+                  />
+                </Tooltip>
+              </IconButton>
+            )}
+
+            {/* remove from cart button */}
+            {hovered && (
+              <IconButton
+                sx={{
+                  position: "absolute",
+                  top: "35%",
+                  left: "25%",
+                  transform: "translate(-50%, -50%)",
+                  opacity: 1, // Change opacity to make it visible
+                  transition: "opacity 0.3s ease",
+                }}
+                onClick={(event) => decreaseProductQuantityHandler(event)}
+              >
+                <Tooltip title="Delete Reservation" placement="bottom">
+                  <RemoveIcon
+                    sx={{
+                      color: "primary.main",
+                      fontSize: 50,
+                    }}
+                  />
+                </Tooltip>
+              </IconButton>
+            )}
 
             {/* text inside of the card */}
             <Stack
@@ -145,6 +219,8 @@ const ProductItem = ({ product, ...props }) => {
               <Typography variant="body1" sx={{ textAlign: "center" }}>
                 {productDescription}
               </Typography>
+
+              {/* Card In Stock and Card Price */}
               <Box
                 sx={{
                   display: "flex",
@@ -163,27 +239,18 @@ const ProductItem = ({ product, ...props }) => {
                   </Typography>
                 </Typography>
                 <Typography variant="body1" fontWeight={550}>
-                  Quantity:{" "}
+                  {location.pathname.includes("/order") ||
+                  location.pathname.includes("/cart")
+                    ? "Quantity: "
+                    : "In Stock: "}
                   <Typography
                     component="span"
                     fontWeight={550}
                     sx={{ color: "primary.dark" }}
                   >
-                    {product.count}
+                    {quantity || product.count}
                   </Typography>
                 </Typography>
-                <button
-                  id={product.id}
-                  name={product.name}
-                  data-price={product.price}
-                  data-image={product.image}
-                  onClick={(e) => add(e)}
-                >
-                  ADD TO CART
-                </button>
-                <button id={product.id} onClick={(e) => remove(e)}>
-                  REMOVE FROM CART
-                </button>
               </Box>
             </Stack>
           </Card>
