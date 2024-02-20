@@ -34,7 +34,16 @@ const userSlice = createSlice({
 			(state, action) => {
 				state.user = action.payload.user;
 				state.orders = action.payload.orders;
-				// maybe update session storage to with the orders
+
+				// update session storage to include orders
+				window.sessionStorage.setItem(
+					USER_CREDENTIALS,
+					JSON.stringify({
+						token: state.token,
+						user: state.user,
+						orders: state.orders,
+					})
+				);
 			}
 		);
 		builder.addMatcher(
@@ -48,6 +57,7 @@ const userSlice = createSlice({
 		builder.addMatcher(userApi.endpoints.logout.matchFulfilled, (state) => {
 			state.token = "";
 			state.user = {};
+			state.orders = [];
 			window.sessionStorage.removeItem(USER_CREDENTIALS);
 		});
 	},
