@@ -11,6 +11,7 @@ import {
 	Stack,
 	Tooltip,
 	IconButton,
+	useMediaQuery,
 } from "@mui/material";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -20,13 +21,13 @@ import {
 	useDecreaseProductQuantityMutation,
 	useGetCartQuery,
 } from "../../../../api/orderApi";
-import { useState } from "react";
 
 const ProductItem = ({ product, quantity, ...props }) => {
+	const { token } = useSelector((state) => state.user);
 	const navigate = useNavigate();
 	const location = useLocation();
 	const isProductPage = location.pathname.includes("/product/");
-	const [hovered, setHovered] = useState(false); // State to track hover state
+	const { data, isLoading, refetch } = useGetCartQuery();
 
 	// text transformation
 	let productDescription =
@@ -38,43 +39,33 @@ const ProductItem = ({ product, quantity, ...props }) => {
 
 	// add to cart handleClick
 	const [addProductToCart] = useAddProductToCartMutation();
-	const { token } = useSelector((state) => state.user);
-	const increaseProductQuantityHandler = (e) => {
-		e.preventDefault();
-		//if user is logged in add item to cart, validation to check if item in cart not made
-		console.log(
-			"e.target.id, e.target.name, e.target.title, e.target.value",
-			e.target.id,
-			e.target.name,
-			e.target.title,
-			e.target.value
-		);
-
-		if (token) addProductToCart(Number(e.target.id));
-		//if guest is adding to cart, add to session storage, this data will be sent once use logs in or registers
-		else {
+	const increaseProductQuantityHandler = async () => {
+		if (token) {
+			// if user is logged in add item to cart, validation to check if item in cart not made
+			const data = await addProductToCart(Number(product.id));
+			refetch();
+			console.log("Clicked The Add To Cart Button In Image: ", data);
+			return data;
+		} else {
+			// if guest is adding to cart, add to session storage, this data will be sent once use logs in or registers
 			if (window.sessionStorage.cart) {
-				const data = JSON.parse(window.sessionStorage.cart);
-				if (data[e.target.id]) data[e.target.id].quantity++;
-				else
-					data[e.target.id] = {
+				const cart = JSON.parse(window.sessionStorage.cart);
+				if (cart[product.id]) {
+					cart[product.id].quantity++;
+				} else {
+					cart[product.id] = {
+						...product,
 						quantity: 1,
-						name: e.target.name,
-						price: Number(e.target.title),
-						id: Number(e.target.id),
-						image: e.target.value,
 					};
-				window.sessionStorage.setItem("cart", JSON.stringify(data));
+				}
+				window.sessionStorage.setItem("cart", JSON.stringify(cart));
 			} else {
 				window.sessionStorage.setItem(
 					"cart",
 					JSON.stringify({
-						[e.target.id]: {
+						[product.id]: {
+							...product,
 							quantity: 1,
-							name: e.target.name,
-							price: Number(e.target.title),
-							id: Number(e.target.id),
-							image: e.target.value,
 						},
 					})
 				);
@@ -82,35 +73,44 @@ const ProductItem = ({ product, quantity, ...props }) => {
 		}
 	};
 
-	//can prob remove this once session is made
-	const { data, isLoading, error } = useGetCartQuery(); // figure out if we need to use these return values
-	const { items } = useSelector((state) => state.order);
+	// decrease quantity in cart handleClick
 	const [descreaseProductQuantity] = useDecreaseProductQuantityMutation();
-	const decreaseProductQuantityHandler = (e) => {
-		e.preventDefault();
+	const decreaseProductQuantityHandler = async () => {
 		if (token) {
-			//will prob replace with session data check instead of state check, similar cart.jsx decrease function if item exist otherwise do nothing
-			for (let item of items) {
-				if (item.productId === Number(e.target.id))
-					return descreaseProductQuantity(Number(e.target.id));
-			}
+			const data = await descreaseProductQuantity(Number(product.id));
+			refetch();
+			console.log(
+				"Clicked The Decrease Quantity Cart Button In Image: ",
+				data
+			);
+
+			// maybe do a refetch here
+			return data;
 		} else {
-			//if cart does not exist do nothing
+			// if cart does not exist do nothing
 			if (!window.sessionStorage.cart) return;
-			const data = JSON.parse(window.sessionStorage.cart);
-			//if item does not exist in cart do nothing
-			if (!data[e.target.id]) return;
-			//if item exist and quantity is 1 remove the item
-			if (data[e.target.id].quantity === 1) delete data[e.target.id];
-			//else reduce quantity by 1
-			else --data[e.target.id].quantity;
-			//update session
-			window.sessionStorage.setItem("cart", JSON.stringify(data));
+
+			// if cart exist get the cart from session storage
+			const cart = JSON.parse(window.sessionStorage.cart);
+
+			// if item does not exist in cart do nothing
+			if (!cart[product.id]) return;
+
+			// if item exist and quantity is 1 remove the item
+			if (cart[product.id].quantity === 1) {
+				delete cart[product.id];
+			} else {
+				// else reduce quantity by 1
+				--cart[product.id].quantity;
+			}
+
+			// update session
+			window.sessionStorage.setItem("cart", JSON.stringify(cart));
 		}
 	};
 
 	// navigate to the product page if the user is not already on the product page
-	const handleClick = () => {
+	const navigateToProductPage = () => {
 		isProductPage ? "" : navigate(`/product/${product.id}`);
 	};
 
@@ -138,66 +138,65 @@ const ProductItem = ({ product, quantity, ...props }) => {
 								"&:hover": {
 									opacity: 0.2,
 								},
+								"&:hover ~ button": {
+									opacity: 1,
+								},
 							}}
 							component="img"
-							onMouseEnter={() => setHovered(true)} // Set hovered to true on mouse enter
-							onMouseLeave={() => setHovered(false)} // Set hovered to false on mouse leave
 						/>
 
 						{/* add to cart button */}
-						{hovered && ( // Render IconButton when hovered is true
-							<IconButton
-								onClick={(event) =>
-									increaseProductQuantityHandler(event)
-								}
-								sx={{
-									position: "absolute",
-									top: "35%",
-									right: "10%",
-									transform: "translate(-50%, -50%)",
-									opacity: 1, // Change opacity to make it visible
-									transition: "opacity 0.3s ease",
-								}}
-							>
-								<Tooltip title="Checkout" placement="bottom">
-									<AddShoppingCartIcon
-										sx={{
-											color: "primary.main",
-											fontSize: 50,
-										}}
-									/>
-								</Tooltip>
-							</IconButton>
-						)}
+						<IconButton
+							onClick={increaseProductQuantityHandler}
+							sx={{
+								position: "absolute",
+								top: "35%",
+								right: "10%",
+								transform: "translate(-50%, -50%)",
+								opacity: 0, // Change opacity to make it visible
+								transition: "opacity 0.3s ease",
+								"&:hover": {
+									opacity: 1,
+								},
+							}}
+						>
+							<Tooltip title="Checkout" placement="bottom">
+								<AddShoppingCartIcon
+									sx={{
+										color: "primary.main",
+										fontSize: 50,
+									}}
+								/>
+							</Tooltip>
+						</IconButton>
 
 						{/* remove from cart button */}
-						{hovered && (
-							<IconButton
-								sx={{
-									position: "absolute",
-									top: "35%",
-									left: "25%",
-									transform: "translate(-50%, -50%)",
-									opacity: 1, // Change opacity to make it visible
-									transition: "opacity 0.3s ease",
-								}}
-								onClick={(event) =>
-									decreaseProductQuantityHandler(event)
-								}
+						<IconButton
+							sx={{
+								position: "absolute",
+								top: "35%",
+								left: "25%",
+								transform: "translate(-50%, -50%)",
+								opacity: 0, // Change opacity to make it visible
+								transition: "opacity 0.3s ease",
+								"&:hover": {
+									opacity: 1,
+								},
+							}}
+							onClick={decreaseProductQuantityHandler}
+						>
+							<Tooltip
+								title="Delete Reservation"
+								placement="bottom"
 							>
-								<Tooltip
-									title="Delete Reservation"
-									placement="bottom"
-								>
-									<RemoveIcon
-										sx={{
-											color: "primary.main",
-											fontSize: 50,
-										}}
-									/>
-								</Tooltip>
-							</IconButton>
-						)}
+								<RemoveIcon
+									sx={{
+										color: "primary.main",
+										fontSize: 50,
+									}}
+								/>
+							</Tooltip>
+						</IconButton>
 
 						{/* text inside of the card */}
 						<Stack
@@ -210,7 +209,7 @@ const ProductItem = ({ product, quantity, ...props }) => {
 						>
 							{/* Styling for the button name */}
 							<Box
-								onClick={handleClick}
+								onClick={navigateToProductPage}
 								sx={{
 									display: "flex",
 									justifyContent: "center",

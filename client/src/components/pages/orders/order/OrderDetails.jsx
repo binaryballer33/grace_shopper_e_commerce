@@ -54,7 +54,7 @@ const OrderDetails = () => {
 					variant="h4"
 					sx={{ color: "primary.dark", ml: { xs: 0, md: 4 } }}
 				>
-					Order Total: ${getOrderTotal(order)}
+					Order Total: ${getOrderTotal(order.itemInfo)}
 				</Typography>
 			</Stack>
 
