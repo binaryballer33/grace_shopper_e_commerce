@@ -17,9 +17,9 @@ import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { capitalize } from "../../../../utils/helper_functions";
 import {
-	useAddProductToCartMutation,
-	useDecreaseProductQuantityMutation,
-	useGetCartQuery,
+  useAddProductToCartMutation,
+  useDecreaseProductQuantityMutation,
+  useGetCartQuery,
 } from "../../../../api/orderApi";
 
 const ProductItem = ({ product, quantity, ...props }) => {
@@ -29,13 +29,13 @@ const ProductItem = ({ product, quantity, ...props }) => {
 	const isProductPage = location.pathname.includes("/product/");
 	const { data, isLoading, refetch } = useGetCartQuery();
 
-	// text transformation
-	let productDescription =
-		!isProductPage && product.description.length > 60
-			? product.description.slice(0, 60) + "..."
-			: product.description;
-	productDescription = capitalize(productDescription);
-	let productName = capitalize(product.name);
+  // text transformation
+  let productDescription =
+    !isProductPage && product.description.length > 60
+      ? product.description.slice(0, 60) + "..."
+      : product.description;
+  productDescription = capitalize(productDescription);
+  let productName = capitalize(product.name);
 
 	// add to cart handleClick
 	const [addProductToCart] = useAddProductToCartMutation();
@@ -225,51 +225,48 @@ const ProductItem = ({ product, quantity, ...props }) => {
 								</Button>
 							</Box>
 
-							<Typography
-								variant="body1"
-								sx={{ textAlign: "center" }}
-							>
-								{productDescription}
-							</Typography>
+              <Typography variant="body1" sx={{ textAlign: "center" }}>
+                {productDescription}
+              </Typography>
 
-							{/* Card In Stock and Card Price */}
-							<Box
-								sx={{
-									display: "flex",
-									justifyContent: "space-between",
-									mt: 2,
-								}}
-							>
-								<Typography variant="body1" fontWeight={550}>
-									Price:{" "}
-									<Typography
-										component="span"
-										fontWeight={550}
-										sx={{ color: "primary.main" }}
-									>
-										${product.price}
-									</Typography>
-								</Typography>
-								<Typography variant="body1" fontWeight={550}>
-									{location.pathname.includes("/order") ||
-									location.pathname.includes("/cart")
-										? "Quantity: "
-										: "In Stock: "}
-									<Typography
-										component="span"
-										fontWeight={550}
-										sx={{ color: "primary.dark" }}
-									>
-										{quantity || product.count}
-									</Typography>
-								</Typography>
-							</Box>
-						</Stack>
-					</Card>
-				</Tooltip>
-			</Box>
-		</Grid>
-	);
+              {/* Card In Stock and Card Price */}
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  mt: 2,
+                }}
+              >
+                <Typography variant="body1" fontWeight={550}>
+                  Price:{" "}
+                  <Typography
+                    component="span"
+                    fontWeight={550}
+                    sx={{ color: "primary.main" }}
+                  >
+                    ${product.price}
+                  </Typography>
+                </Typography>
+                <Typography variant="body1" fontWeight={550}>
+                  {location.pathname.includes("/order") ||
+                  location.pathname.includes("/cart")
+                    ? "Quantity: "
+                    : "In Stock: "}
+                  <Typography
+                    component="span"
+                    fontWeight={550}
+                    sx={{ color: "primary.dark" }}
+                  >
+                    {quantity || product.count}
+                  </Typography>
+                </Typography>
+              </Box>
+            </Stack>
+          </Card>
+        </Tooltip>
+      </Box>
+    </Grid>
+  );
 };
 
 export default ProductItem;
