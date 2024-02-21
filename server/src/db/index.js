@@ -270,7 +270,7 @@ export const checkoutOrder = async (id, type) => {
   }
 };
 
-//allows user to add to cart
+// allows user to add to cart
 export const updateCart = async (userId, productId, isAdd) => {
   try {
     //gets the current cart

@@ -10,7 +10,7 @@ export const transformTextField = (textfield) =>
 	textfield.toLowerCase().replace(" ", "");
 
 export const getOrderTotal = (order) => {
-	return order.itemInfo.reduce((acc, item) => {
+	return order.reduce((acc, item) => {
 		return acc + item.itemDescription.price * item.quantity;
 	}, 0);
 };

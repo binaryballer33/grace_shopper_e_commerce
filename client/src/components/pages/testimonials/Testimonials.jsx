@@ -6,32 +6,33 @@ import {
 	Box,
 	Typography,
 } from "@mui/material";
+import StarBorderIcon from "@mui/icons-material/StarBorder";
 
 const Testimonials = () => {
 	// Array of testimonies
 	const testimonies = [
 		{
-			text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+			text: "I have been searching for fresh organic fruit for awhile and I am glad that I came across this company. Their website is very user friendly and they have really good deals for fruit. Also if any fruit arrives damaged, the company is very good about replacing the products or giving you a refund. I would highly recommend anyone that is searching for organic fruit at decent prices to shop with this company.",
 			author: "John Doe",
 			company: "ABC Inc.",
 		},
 		{
-			text: "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
+			text: "When I first came across this website I thought that it was a scam because I did not believe that prices for organic fruit could be so low. When I got my first shipment and saw that it was fresh fruit that was professionally wrapped i was shocked. I recommend this company to people looking for fresh fruit.",
 			author: "Jane Smith",
 			company: "XYZ Corp.",
 		},
 		{
-			text: "Curabitur blandit, risus ac condimentum malesuada, ipsum ex eleifend mauris, sit amet ultricies odio lorem quis odio.",
+			text: "As an elderly person this website is very easy to use. I was able to find everything that I was looking for in a timely manner and came across no issues. When I received my delivery, there was no damage to my products and everything was fresh just as it was advertised. I am very satisfied with my order.",
 			author: "Alex Johnson",
 			company: "123 Industries",
 		},
 		{
-			text: "Maecenas tempus sapien nec nisl blandit, non volutpat lacus fermentum.",
+			text: "I have many other websites to choose from to get fresh organic fruit but I rather use this website. The website is very easy to use, and I had a small issue while checking out my products. I called the customer service number and they answered the phone professionally and was able to help me with my problem right away with no issues. When I received my delivery I was not disappointed at all and I will definitely be buying from here again in the future.",
 			author: "Emily Brown",
 			company: "456 Corporation",
 		},
 		{
-			text: "Nullam hendrerit metus vel dolor placerat lacinia.",
+			text: "If you want to shop at a business that cares about there customers, then I recommend you choose this place. They're customer service is amazing and the products that they sell are amazing as well. I have had a great experience with them, and all my friends and family that I have recommended this company to have nothing but great things to say about them.",
 			author: "Michael Davis",
 			company: "789 Enterprises",
 		},
@@ -45,7 +46,7 @@ const Testimonials = () => {
 				textAlign="center"
 				mt={2}
 			>
-				What Are Customers Are Saying
+				What Our Customers Are Saying
 			</Typography>
 			<Stack
 				sx={{
@@ -86,6 +87,7 @@ const Testimonials = () => {
 								marginRight: { xs: 0, md: 2 },
 								marginBottom: { xs: 2, md: 0 },
 								flexGrow: 1, // allows the box to grow and take up the remaining space ( there will be some, and can use because parent element is display flex )
+								bgcolor: "primary.main",
 							}}
 						>
 							<Paper variant="outlined">
@@ -95,6 +97,21 @@ const Testimonials = () => {
 										secondary={`- ${testimonies[0].author}, ${testimonies[0].company}`}
 									/>
 								</ListItem>
+								<StarBorderIcon
+									sx={{ color: "gold", p: 0.5 }}
+								/>
+								<StarBorderIcon
+									sx={{ color: "gold", p: 0.5 }}
+								/>
+								<StarBorderIcon
+									sx={{ color: "gold", p: 0.5 }}
+								/>
+								<StarBorderIcon
+									sx={{ color: "gold", p: 0.5 }}
+								/>
+								<StarBorderIcon
+									sx={{ color: "gold", p: 0.5 }}
+								/>
 							</Paper>
 						</Box>
 
@@ -116,6 +133,18 @@ const Testimonials = () => {
 										secondary={`- ${testimonies[1].author}, ${testimonies[1].company}`}
 									/>
 								</ListItem>
+								<StarBorderIcon
+									sx={{ color: "gold", p: 0.5 }}
+								/>
+								<StarBorderIcon
+									sx={{ color: "gold", p: 0.5 }}
+								/>
+								<StarBorderIcon
+									sx={{ color: "gold", p: 0.5 }}
+								/>
+								<StarBorderIcon
+									sx={{ color: "gold", p: 0.5 }}
+								/>
 							</Paper>
 						</Box>
 					</Stack>
@@ -148,6 +177,15 @@ const Testimonials = () => {
 										secondary={`- ${testimonies[2].author}, ${testimonies[2].company}`}
 									/>
 								</ListItem>
+								<StarBorderIcon
+									sx={{ color: "gold", p: 0.5 }}
+								/>
+								<StarBorderIcon
+									sx={{ color: "gold", p: 0.5 }}
+								/>
+								<StarBorderIcon
+									sx={{ color: "gold", p: 0.5 }}
+								/>
 							</Paper>
 						</Box>
 
@@ -160,6 +198,7 @@ const Testimonials = () => {
 								borderRadius: 3,
 								p: 2,
 								flexGrow: 1, // allows the box to grow and take up the remaining space ( there will be some, and can use because parent element is display flex )
+								bgcolor: "primary.main",
 							}}
 						>
 							<Paper variant="outlined">
@@ -169,6 +208,19 @@ const Testimonials = () => {
 										secondary={`- ${testimonies[3].author}, ${testimonies[3].company}`}
 									/>
 								</ListItem>
+								<StarBorderIcon
+									sx={{ color: "gold", p: 0.5 }}
+								/>
+								<StarBorderIcon
+									sx={{ color: "gold", p: 0.5 }}
+								/>
+								<StarBorderIcon
+									sx={{ color: "gold", p: 0.5 }}
+									
+								/>
+								<StarBorderIcon
+									sx={{ color: "gold", p: 0.5 }}
+								/>
 							</Paper>
 						</Box>
 					</Stack>
@@ -195,6 +247,7 @@ const Testimonials = () => {
 							border: "1px solid black",
 							p: 2,
 							borderRadius: 3,
+							bgcolor: "primary.main",
 						}}
 					>
 						<Paper variant="outlined">
@@ -204,6 +257,15 @@ const Testimonials = () => {
 									secondary={`- ${testimonies[4].author}, ${testimonies[4].company}`}
 								/>
 							</ListItem>
+							<StarBorderIcon
+									sx={{ color: "gold", p: 0.5 }}
+								/>
+								<StarBorderIcon
+									sx={{ color: "gold", p: 0.5 }}
+								/>
+								<StarBorderIcon
+									sx={{ color: "gold", p: 0.5 }}
+								/>
 						</Paper>
 					</Box>
 				</Box>

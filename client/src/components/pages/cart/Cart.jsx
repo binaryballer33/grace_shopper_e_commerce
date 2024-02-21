@@ -1,7 +1,17 @@
 /* eslint-disable react/prop-types */
 import { useSelector } from "react-redux";
 import { useState } from "react";
-import { Box, Button, Grid, Stack, Typography } from "@mui/material";
+import { useEffect } from "react";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Grid,
+  Stack,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import {
   useGetCartQuery,
   useDecreaseProductQuantityMutation,
@@ -11,7 +21,7 @@ import {
   useCheckoutOrderMutation,
 } from "../../../api/orderApi";
 import { Loading, Error, ProductItem } from "../../../components";
-import { useEffect } from "react";
+import { getOrderTotal } from "../../../utils/helper_functions";
 
 const CartFailure = () => {
   return (
@@ -41,13 +51,22 @@ const LoggedOutUserCart = ({
               <Typography variant="body2">
                 Quantity: x{item.quantity}
               </Typography>
-              <Button id={item.id} onClick={(e) => removeProductFromCart(e)}>
+              <Button
+                id={item.id}
+                onClick={(e) => removeProductFromCart(e.target.id)}
+              >
                 Remove
               </Button>
-              <Button id={item.id} onClick={(e) => increaseProductQuantity(e)}>
+              <Button
+                id={item.id}
+                onClick={(e) => increaseProductQuantity(e.target.id)}
+              >
                 Increase
               </Button>
-              <Button id={item.id} onClick={(e) => decreaseProductQuantity(e)}>
+              <Button
+                id={item.id}
+                onClick={(e) => decreaseProductQuantity(e.target.id)}
+              >
                 Decrease
               </Button>
               {/* <Box>
@@ -71,8 +90,16 @@ const LoggedInUserCart = ({
   checkoutOrder,
   cart, // why is this not needed for a logged in user?
 }) => {
-  const { data, isLoading } = useGetCartQuery();
-  const { order, items } = useSelector((state) => state.order);
+  const { data, isLoading, refetch } = useGetCartQuery();
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
+  // get product order information
+  const productsInOrder = data?.order?.orderDetailsWithDescriptions;
+  const order = data?.order.order;
+
+  // console.log("productsInOrder", productsInOrder);
+  // console.log("order", order);
 
   return (
     <Stack
@@ -80,67 +107,114 @@ const LoggedInUserCart = ({
         alignItems: "center",
         justifyContent: "center",
         textAlign: "center",
+        minHeight: "100dvh",
+        minWidth: "100dvw",
       }}
     >
       {isLoading ? (
         <Loading />
-      ) : !items.length ? (
+      ) : !productsInOrder ? (
         <CartFailure />
       ) : (
-        <Box>
-          <Typography variant="h4">Cart</Typography>
-          <Typography variant="h3">Order ID: {order.id}</Typography>
-          <Typography variant="body2">Total: ${order.total}.00</Typography>
-          <Button variant="contained" onClick={cancelOrder}>
-            Cancel Order
-          </Button>
-          {items.map((item) => {
-            return (
-              <Box key={item.productId}>
-                <Grid container gap={2} justifyContent="center">
+        <Stack
+          sx={{
+            alignItems: "center",
+            justifyContent: "space-evenly",
+            textAlign: "center",
+            minHeight: "100dvh",
+            minWidth: "100dvw",
+          }}
+        >
+          {/* Cart Header */}
+          <Typography
+            variant={isSmallScreen ? "h4" : "h3"}
+            mt={2}
+            mb={2}
+            color="primary.main"
+          >
+            Cart Order ID: {order.id}
+          </Typography>
+
+          {/* Cart Items */}
+          <Grid container gap={2} justifyContent="center">
+            {productsInOrder.map((order) => {
+              return (
+                <Stack key={order.productId}>
                   <ProductItem
-                    key={item.id}
+                    key={order.id}
+                    product={order.itemDescription}
+                    quantity={order.quantity}
                     sx={{
                       p: { xs: 0.5, sm: 1 },
                       bgcolor: "primary.main",
                       width: {
                         xs: 300,
-                        sm: 400,
-                        md: 350,
-                        lg: 330,
+                        sm: 320,
                       },
                     }}
-                    product={item.itemDescription}
                   />
-                </Grid>
-                <Button
-                  variant="contained"
-                  id={item.productId}
-                  onClick={(e) => removeProductFromCart(e)}
-                >
-                  Delete From Cart
-                </Button>
-                <Button
-                  variant="contained"
-                  id={item.productId}
-                  onClick={(e) => increaseProductQuantity(e)}
-                >
-                  Increase
-                </Button>
-                <Button
-                  variant="contained"
-                  id={item.productId}
-                  onClick={(e) => decreaseProductQuantity(e)}
-                >
-                  Decrease
-                </Button>
-              </Box>
-            );
-          })}
-          <Button variant="contained" onClick={checkoutOrder}>
-            Checkout
-          </Button>
-        </Box>
+
+                  {/* Card Action Buttons */}
+                  <ButtonGroup sx={{ mt: 0.5 }}>
+                    <Button
+                      variant="contained"
+                      onClick={() => {
+                        console.log("the product id is", order.productId);
+                        removeProductFromCart(order.productId);
+                        refetch();
+                      }}
+                      sx={{ flexGrow: 1 }}
+                    >
+                      Delete
+                    </Button>
+                    <Button
+                      variant="contained"
+                      onClick={() => {
+                        console.log("the product id is", order.productId);
+                        increaseProductQuantity(order.productId);
+                        refetch();
+                      }}
+                      sx={{ flexGrow: 1 }}
+                    >
+                      Increase
+                    </Button>
+                    <Button
+                      variant="contained"
+                      onClick={() => {
+                        console.log("the product id is", order.productId);
+                        decreaseProductQuantity(order.productId);
+                        refetch();
+                      }}
+                      sx={{ flexGrow: 1 }}
+                    >
+                      Decrease
+                    </Button>
+                  </ButtonGroup>
+                </Stack>
+              );
+            })}
+          </Grid>
+
+          {/* Cart Actions */}
+          <Stack
+            sx={{
+              flexDirection: { xs: "column", sm: "row" },
+              mt: 2,
+              mb: 2,
+              gap: 2,
+            }}
+          >
+            <Button variant="contained" onClick={cancelOrder}>
+              Cancel Order
+            </Button>
+            <Button variant="contained" onClick={checkoutOrder}>
+              Checkout
+            </Button>
+            <Typography variant="h4">
+              Total: ${getOrderTotal(productsInOrder)}.00
+            </Typography>
+          </Stack>
+        </Stack>
       )}
     </Stack>
   );
@@ -160,42 +234,50 @@ const Cart = () => {
       setCart(Object.values(JSON.parse(window.sessionStorage.cart)));
     };
     if (window.sessionStorage.cart) updateCart();
-  }, [!token]);
+  }, []);
 
-  const handleProductIncrease = (e) => {
-    if (token) increaseProductQuantity(Number(e.target.id));
-    else {
+  const handleProductIncrease = async (productId) => {
+    if (token) {
+      const data = await increaseProductQuantity(Number(productId));
+      console.log("Clicked Product Increase Button Data: ", data);
+    } else {
       const cart = JSON.parse(window.sessionStorage.cart);
-      cart[e.target.id].quantity++;
+      cart[productId].quantity++;
       window.sessionStorage.setItem("cart", JSON.stringify(cart));
       setCart(Object.values(JSON.parse(window.sessionStorage.cart)));
     }
   };
 
-  const handleProductDecrease = (e) => {
-    if (token) decreaseProductQuantity(Number(e.target.id));
-    else {
+  const handleProductDecrease = async (productId) => {
+    if (token) {
+      const data = await decreaseProductQuantity(Number(productId));
+      console.log("Clicked Product Decrease Button Data: ", data);
+      return data;
+    } else {
       const cart = JSON.parse(window.sessionStorage.cart);
-      if (cart[e.target.id].quantity < 2) return handleProductRemoval(e);
-      cart[e.target.id].quantity--;
+      cart[productId].quantity--;
       window.sessionStorage.setItem("cart", JSON.stringify(cart));
       setCart(Object.values(JSON.parse(window.sessionStorage.cart)));
     }
   };
 
-  const handleProductRemoval = (e) => {
-    if (token) removeProductFromCart(Number(e.target.id));
-    else {
+  const handleProductRemoval = async (productId) => {
+    if (token) {
+      const data = await removeProductFromCart(Number(productId));
+      console.log("Clicked Product Removal Button Data: ", data);
+      return data;
+    } else {
       const cart = JSON.parse(window.sessionStorage.cart);
-      delete cart[e.target.id];
+      delete cart[productId];
       window.sessionStorage.setItem("cart", JSON.stringify(cart));
       setCart(Object.values(JSON.parse(window.sessionStorage.cart)));
     }
   };
 
   const handleCancelOrder = () => {
-    if (token) cancelOrder();
-    else {
+    if (token) {
+      cancelOrder();
+    } else {
       window.sessionStorage.removeItem("cart");
       setCart([]);
     }
