@@ -46,8 +46,8 @@ const ProductItem = ({ product, quantity, ...props }) => {
       "e.target.id, e.target.name, e.target.title, e.target.value",
       e.target.id,
       e.target.name,
-      e.target.title,
-      e.target.value
+      e.target.dataset.image,
+      e.target.dataset.price
     );
 
     if (token) addProductToCart(Number(e.target.id));
@@ -60,9 +60,9 @@ const ProductItem = ({ product, quantity, ...props }) => {
           data[e.target.id] = {
             quantity: 1,
             name: e.target.name,
-            price: Number(e.target.title),
+            price: Number(e.target.dataset.price),
             id: Number(e.target.id),
-            image: e.target.value,
+            image: e.target.dataset.image,
           };
         window.sessionStorage.setItem("cart", JSON.stringify(data));
       } else {
@@ -72,9 +72,9 @@ const ProductItem = ({ product, quantity, ...props }) => {
             [e.target.id]: {
               quantity: 1,
               name: e.target.name,
-              price: Number(e.target.title),
+              price: Number(e.target.dataset.price),
               id: Number(e.target.id),
-              image: e.target.value,
+              image: e.target.dataset.image,
             },
           })
         );
@@ -145,8 +145,12 @@ const ProductItem = ({ product, quantity, ...props }) => {
             />
 
             {/* add to cart button */}
-            {hovered && ( // Render IconButton when hovered is true
+            {/* {hovered && ( // Render IconButton when hovered is true
               <IconButton
+                id={product.id}
+                name={product.name}
+                data-price={product.price}
+                data-image={product.image}
                 onClick={(event) => increaseProductQuantityHandler(event)}
                 sx={{
                   position: "absolute",
@@ -166,10 +170,19 @@ const ProductItem = ({ product, quantity, ...props }) => {
                   />
                 </Tooltip>
               </IconButton>
-            )}
+            )} */}
+            <button
+              id={product.id}
+              name={product.name}
+              data-price={product.price}
+              data-image={product.image}
+              onClick={(event) => increaseProductQuantityHandler(event)}
+            >
+              +
+            </button>
 
             {/* remove from cart button */}
-            {hovered && (
+            {/* {hovered && (
               <IconButton
                 sx={{
                   position: "absolute",
@@ -179,6 +192,7 @@ const ProductItem = ({ product, quantity, ...props }) => {
                   opacity: 1, // Change opacity to make it visible
                   transition: "opacity 0.3s ease",
                 }}
+                id={product.id}
                 onClick={(event) => decreaseProductQuantityHandler(event)}
               >
                 <Tooltip title="Delete Reservation" placement="bottom">
@@ -190,7 +204,13 @@ const ProductItem = ({ product, quantity, ...props }) => {
                   />
                 </Tooltip>
               </IconButton>
-            )}
+            )} */}
+            <button
+              id={product.id}
+              onClick={(event) => decreaseProductQuantityHandler(event)}
+            >
+              -
+            </button>
 
             {/* text inside of the card */}
             <Stack
