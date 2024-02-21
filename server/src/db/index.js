@@ -270,14 +270,14 @@ export const checkoutOrder = async (id, type) => {
 	}
 };
 
-//allows user to add to cart
+// allows user to add to cart
 export const updateCart = async (userId, productId, isAdd) => {
 	try {
-		//gets the current cart
+		// gets the current cart
 		let incart = await prisma.orders.findFirst({
 			where: { userId, status: "inCart" },
 		});
-		//if there is no cart create an order with status of inCart
+		// if there is no cart create an order with status of inCart
 		if (!incart)
 			incart = await prisma.orders.create({
 				data: {
@@ -286,7 +286,7 @@ export const updateCart = async (userId, productId, isAdd) => {
 					total: 0,
 				},
 			});
-		//add/remove products to/from cart
+		// add/remove products to/from cart
 		let orderProduct;
 		if (isAdd)
 			await prisma.productsInOrder.create({

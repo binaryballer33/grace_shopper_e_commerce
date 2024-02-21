@@ -15,6 +15,24 @@ const theme = createTheme({
 		},
 	},
 	components: {
+		MuiSvgIcon: {
+			styleOverrides: {
+				root: {
+					"&:hover": {
+						color: "white",
+					},
+				},
+			},
+		},
+		MuiButtonBase: {
+			styleOverrides: {
+				root: {
+					"&.MuiIconButton-root:hover": {
+						backgroundColor: "#213737",
+					},
+				},
+			},
+		},
 		MuiOutlinedInput: {
 			styleOverrides: {
 				root: {
