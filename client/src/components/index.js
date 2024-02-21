@@ -11,6 +11,7 @@ export { default as ProductItem } from "./pages/products/product/ProductItem";
 export { default as BestSellers } from "./pages/products/BestSellers";
 export { default as OrderItem } from "./pages/orders/order/OrderItem";
 export { default as Orders } from "./pages/orders/Orders";
+export { default as Checkout } from "./pages/checkout/Checkout";
 export { default as Cart } from "./pages/cart/Cart";
 export { default as CreateForm } from "./auth/create_form/CreateForm";
 export { default as LoginForm } from "./auth/login_form/LoginForm";

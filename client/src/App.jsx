@@ -12,6 +12,7 @@ import {
 	Testimonials,
 	Contact,
 	OrderDetails,
+	Checkout,
 } from "./components";
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
 				<Route path="/orderdetails/:id" element={<OrderDetails />} />
 				<Route path="/products" element={<Products />} />
 				<Route path="/product/:id" element={<Product />} />
+				<Route path="/checkout" element={<Checkout />} />
 				<Route path="/cart" element={<Cart />} />
 				<Route path="/login" element={<LoginForm />} />
 				<Route path="/register" element={<RegisterForm />} />

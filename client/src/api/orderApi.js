@@ -14,6 +14,7 @@ const orderApi = api.injectEndpoints({
 	endpoints: (builder) => ({
 		getCart: builder.query({
 			query: () => getInCartRoute(),
+			providesTags: (result, error, id) => [{ type: "Cart", id: "LIST" }],
 		}),
 		initalAdd: builder.mutation({
 			query: (cart) => ({
@@ -55,12 +56,14 @@ const orderApi = api.injectEndpoints({
 				url: getCancelOrderRotue(),
 				method: "PUT",
 			}),
+			invalidatesTags: [{ type: "Cart", id: "LIST" }],
 		}),
 		checkoutOrder: builder.mutation({
 			query: () => ({
 				url: getCheckoutOrderRoute(),
 				method: "PUT",
 			}),
+			invalidatesTags: [{ type: "Cart", id: "LIST" }],
 		}),
 	}),
 });

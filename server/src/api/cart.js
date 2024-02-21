@@ -13,12 +13,10 @@ const cartRouter = express.Router();
 cartRouter.get("/incart", verifyToken, async (req, res, next) => {
 	try {
 		if (!req.user)
-			return res
-				.status(400)
-				.send({
-					message: "User not logged in",
-					status: res.statusCode,
-				});
+			return res.status(400).send({
+				message: "User not logged in",
+				status: res.statusCode,
+			});
 		const inCart = await getIncartOrder(req.user.id);
 		inCart.val === 1
 			? res.status(200).send({
@@ -35,12 +33,10 @@ cartRouter.get("/incart", verifyToken, async (req, res, next) => {
 						orderDetailsWithDescriptions: [],
 					},
 			  })
-			: res
-					.status(200)
-					.send({
-						message: "Successfully found cart data",
-						order: inCart,
-					});
+			: res.status(200).send({
+					message: "Successfully found cart data",
+					order: inCart,
+			  });
 	} catch (error) {
 		next(error);
 	}
@@ -50,12 +46,10 @@ cartRouter.get("/incart", verifyToken, async (req, res, next) => {
 cartRouter.put("/checkout", verifyToken, async (req, res, next) => {
 	try {
 		if (!req.user)
-			return res
-				.status(400)
-				.send({
-					message: "User not logged in",
-					status: res.statusCode,
-				});
+			return res.status(400).send({
+				message: "User not logged in",
+				status: res.statusCode,
+			});
 		const inCart = await checkoutOrder(req.user.id, "inCart");
 		res.status(200).send({
 			message: "Successfully checkout order",
@@ -70,12 +64,10 @@ cartRouter.put("/checkout", verifyToken, async (req, res, next) => {
 cartRouter.put("/cancel", verifyToken, async (req, res, next) => {
 	try {
 		if (!req.user)
-			return res
-				.status(400)
-				.send({
-					message: "User not logged in",
-					status: res.statusCode,
-				});
+			return res.status(400).send({
+				message: "User not logged in",
+				status: res.statusCode,
+			});
 		const cancelled = await checkoutOrder(req.user.id, "cancelled");
 		res.status(200).send({
 			message: "Successfully cancelled order",
@@ -90,12 +82,10 @@ cartRouter.put("/cancel", verifyToken, async (req, res, next) => {
 cartRouter.put("/add", verifyToken, async (req, res, next) => {
 	try {
 		if (!req.user)
-			return res
-				.status(400)
-				.send({
-					message: "User not logged in",
-					status: res.statusCode,
-				});
+			return res.status(400).send({
+				message: "User not logged in",
+				status: res.statusCode,
+			});
 		const update = await updateCart(req.user.id, req.body.productid, true);
 		res.status(200).send({
 			message: "Successfully added item to cart",
@@ -110,12 +100,10 @@ cartRouter.put("/add", verifyToken, async (req, res, next) => {
 cartRouter.put("/delete", verifyToken, async (req, res, next) => {
 	try {
 		if (!req.user)
-			return res
-				.status(400)
-				.send({
-					message: "User not logged in",
-					status: res.statusCode,
-				});
+			return res.status(400).send({
+				message: "User not logged in",
+				status: res.statusCode,
+			});
 		const update = await updateCart(req.user.id, req.body.productid, false);
 		res.status(201).send({
 			message: "Successfully removed item from cart",
@@ -130,12 +118,10 @@ cartRouter.put("/delete", verifyToken, async (req, res, next) => {
 cartRouter.put("/updateUp", verifyToken, async (req, res, next) => {
 	try {
 		if (!req.user)
-			return res
-				.status(400)
-				.send({
-					message: "User not logged in",
-					status: res.statusCode,
-				});
+			return res.status(400).send({
+				message: "User not logged in",
+				status: res.statusCode,
+			});
 		const update = await updateQuantity(
 			req.user.id,
 			req.body.productid,
@@ -154,12 +140,10 @@ cartRouter.put("/updateUp", verifyToken, async (req, res, next) => {
 cartRouter.put("/updateDown", verifyToken, async (req, res, next) => {
 	try {
 		if (!req.user)
-			return res
-				.status(400)
-				.send({
-					message: "User not logged in",
-					status: res.statusCode,
-				});
+			return res.status(400).send({
+				message: "User not logged in",
+				status: res.statusCode,
+			});
 		const update = await updateQuantity(
 			req.user.id,
 			req.body.productid,
@@ -183,12 +167,10 @@ cartRouter.put("/updateDown", verifyToken, async (req, res, next) => {
 cartRouter.put("/addCart", verifyToken, async (req, res, next) => {
 	try {
 		return !req.user
-			? res
-					.status(400)
-					.send({
-						message: "User not logged in",
-						status: res.statusCode,
-					})
+			? res.status(400).send({
+					message: "User not logged in",
+					status: res.statusCode,
+			  })
 			: !req.body.cart.length
 			? res.status(200).send({ message: "Empty cart" })
 			: res.status(201).send({
