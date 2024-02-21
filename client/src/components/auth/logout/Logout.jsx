@@ -75,7 +75,7 @@ const Logout = () => {
 		 */
 		const timer = setTimeout(() => {
 			if (location.pathname === currentLocation) {
-				navigate("/products");
+				navigate("/");
 			}
 		}, 4000);
 

@@ -36,7 +36,7 @@ const RenderProduct = ({ product }) => {
 				}}
 			>
 				<Typography variant="h6" sx={{ color: "primary.dark" }}>
-					Back To All Products
+					Go Back To Previous Page
 				</Typography>
 			</Button>
 		</Stack>

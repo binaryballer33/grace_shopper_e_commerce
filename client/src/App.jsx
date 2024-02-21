@@ -11,6 +11,7 @@ import {
 	LandingPage,
 	Testimonials,
 	Contact,
+	OrderDetails,
 } from "./components";
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
 				<Route index element={<LandingPage />} />
 				<Route path="/testimonials" element={<Testimonials />} />
 				<Route path="/contact" element={<Contact />} />
+				<Route path="/orderdetails/:id" element={<OrderDetails />} />
 				<Route path="/products" element={<Products />} />
 				<Route path="/product/:id" element={<Product />} />
 				<Route path="/cart" element={<Cart />} />
