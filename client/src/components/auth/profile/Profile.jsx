@@ -62,8 +62,8 @@ const ProfileSuccess = ({ user }) => {
 							color="primary"
 							sx={{ textDecoration: "none", mb: 3, p: 2 }}
 						>
-							Products In Cart:
-							{orders.incart[0]?.itemInfo.length}
+							Products In Cart:{" "}
+							{orders.incart[0]?.itemInfo.length || 0}
 						</Typography>
 					</Stack>
 				</Grid>
@@ -76,6 +76,7 @@ const ProfileSuccess = ({ user }) => {
 							width: "100%",
 							p: { xs: 0, md: 2 },
 							overflow: "auto",
+							height: "100dvh",
 						}}
 					>
 						<Typography

@@ -11,7 +11,6 @@ import {
 	Stack,
 	Tooltip,
 	IconButton,
-	useMediaQuery,
 } from "@mui/material";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -42,9 +41,8 @@ const ProductItem = ({ product, quantity, ...props }) => {
 	const increaseProductQuantityHandler = async () => {
 		if (token) {
 			// if user is logged in add item to cart, validation to check if item in cart not made
-			const data = await addProductToCart(Number(product.id));
+			await addProductToCart(Number(product.id));
 			refetch();
-			return data;
 		} else {
 			// if guest is adding to cart, add to session storage, this data will be sent once use logs in or registers
 			if (window.sessionStorage.cart) {
@@ -76,11 +74,8 @@ const ProductItem = ({ product, quantity, ...props }) => {
 	const [descreaseProductQuantity] = useDecreaseProductQuantityMutation();
 	const decreaseProductQuantityHandler = async () => {
 		if (token) {
-			const data = await descreaseProductQuantity(Number(product.id));
+			await descreaseProductQuantity(Number(product.id));
 			refetch();
-
-			// maybe do a refetch here
-			return data;
 		} else {
 			// if cart does not exist do nothing
 			if (!window.sessionStorage.cart) return;

@@ -8,44 +8,36 @@ import shaq from "../../../assets/shaq.jpg";
 // TODO: fix styling
 const Contact = () => {
 	return (
-		<Grid
-			container
-			direction="column"
-			alignItems="center"
-			justifyContent="center"
-			spacing={2}
-		>
-			<Grid item>
-				<Typography
-					variant="h5"
-					color="primary.main"
-					sx={{ mt: 4, mb: 2 }}
-				>
-					Contact Us
-				</Typography>
-			</Grid>
+		<Stack alignItems="center" justifyContent="center">
+			<Typography variant="h5" color="primary.main" sx={{ mt: 4, mb: 2 }}>
+				Contact Us
+			</Typography>
 
-			<Grid item>
-				<Typography
-					variant="h6"
-					color="text.secondary"
-					align="center"
-					gutterBottom
-					sx={{ mt: 2 }}
-				>
-					For 24/7 support, contact us via
-				</Typography>
-			</Grid>
+			<Typography variant="h6" align="center" gutterBottom sx={{ mt: 2 }}>
+				For 24/7 Support, Contact Us Via
+			</Typography>
 
 			{/* Social Media Icons */}
-			<Grid container spacing={2} justifyContent="center" p={4}>
+			<Grid container justifyContent="center">
 				{/* Facebook card */}
 				<Grid
 					item
 					sx={{ marginBottom: 2, height: 200, width: 300, p: 2 }}
 				>
-					<Stack sx={{ bgcolor: "primary.main", height: 200 }}>
-						<Typography variant="h6" align="center" color="white">
+					<Stack
+						sx={{
+							bgcolor: "primary.main",
+							height: 200,
+							justifyContent: "space-evenly",
+							borderRadius: 5,
+						}}
+					>
+						<Typography
+							variant="h6"
+							align="center"
+							color="white"
+							p={2}
+						>
 							Connect with us on Facebook
 						</Typography>
 						<IconButton
@@ -64,8 +56,20 @@ const Contact = () => {
 					item
 					sx={{ marginBottom: 2, height: 200, width: 300, p: 2 }}
 				>
-					<Stack sx={{ bgcolor: "primary.main", height: 200 }}>
-						<Typography variant="h6" align="center" color="white">
+					<Stack
+						sx={{
+							bgcolor: "primary.main",
+							height: 200,
+							justifyContent: "space-evenly",
+							borderRadius: 5,
+						}}
+					>
+						<Typography
+							variant="h6"
+							align="center"
+							color="white"
+							p={2}
+						>
 							Connect with us on Instagram
 						</Typography>
 						<IconButton
@@ -84,8 +88,20 @@ const Contact = () => {
 					item
 					sx={{ marginBottom: 2, height: 200, width: 300, p: 2 }}
 				>
-					<Stack sx={{ bgcolor: "primary.main", height: 200 }}>
-						<Typography variant="h6" align="center" color="white">
+					<Stack
+						sx={{
+							bgcolor: "primary.main",
+							height: 200,
+							justifyContent: "space-evenly",
+							borderRadius: 5,
+						}}
+					>
+						<Typography
+							variant="h6"
+							align="center"
+							color="white"
+							p={2}
+						>
 							Connect with us on Twitter
 						</Typography>
 						<IconButton
@@ -100,14 +116,21 @@ const Contact = () => {
 				</Grid>
 			</Grid>
 
-			<Grid item sx={{ marginTop: 6, marginBottom: 2 }}>
-				<Typography variant="h6" color="primary.main">
-					Other ways to contact us
-				</Typography>
-			</Grid>
+			<Typography
+				variant="h6"
+				color="primary.main"
+				sx={{ marginTop: 6, marginBottom: 2 }}
+			>
+				Other ways to contact us
+			</Typography>
 
 			{/* Existing ContactCard components */}
-			<Grid container justifyContent="center" spacing={2}>
+			<Grid
+				container
+				justifyContent="center"
+				spacing={2}
+				textAlign="center"
+			>
 				<Grid item>
 					<ContactCard
 						name="Shaquille Rashad Mandy"
@@ -135,7 +158,7 @@ const Contact = () => {
 					/>
 				</Grid>
 			</Grid>
-		</Grid>
+		</Stack>
 	);
 };
 

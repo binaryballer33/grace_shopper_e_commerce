@@ -1,11 +1,11 @@
 /* eslint-disable react/prop-types */
 import { useSelector } from "react-redux";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
-	Box,
 	Button,
 	ButtonGroup,
+	Card,
+	CardMedia,
 	Grid,
 	Stack,
 	Typography,
@@ -20,9 +20,9 @@ import {
 	useCancelOrderMutation,
 	useCheckoutOrderMutation,
 } from "../../../api/orderApi";
-import { Loading, Error, ProductItem } from "../../../components";
+import { Loading, ProductItem } from "../../../components";
 import { getOrderTotal } from "../../../utils/helper_functions";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const CartFailure = () => {
 	return (
@@ -36,69 +36,131 @@ const LoggedOutUserCart = ({
 	increaseProductQuantity,
 	decreaseProductQuantity,
 	removeProductFromCart,
-	cancelOrder,
-	checkoutOrder, // this probably should be used for a logged out user too
-	cart,
 }) => {
-	function generateUUID() {
-		return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
-			/[xy]/g,
-			function (c) {
-				var r = (Math.random() * 16) | 0,
-					v = c === "x" ? r : (r & 0x3) | 0x8;
-				return v.toString(16);
-			}
-		);
-	}
+	// try to get cart from session storage
+	const sessionStorage = window.sessionStorage.getItem("cart");
+
+	// if cart exist in session storage, get the cart, else set cart to an empty array
+	const cart =
+		Object.values(sessionStorage ? JSON.parse(sessionStorage) : {}) || [];
+
+	// get the cart total
+	const getCartTotal = (cart) => {
+		return cart.reduce((acc, product) => {
+			return acc + product.price * product.quantity;
+		}, 0);
+	};
 
 	return (
-		<Box>
-			{window.sessionStorage.cart &&
-				cart.map((item) => {
-					return (
-						<Box key={item.id}>
-							<Typography variant="h3">{item.name}</Typography>
-							<img src={item.image} alt={item.name} />
-							<Typography variant="body2">
-								Price: ${item.price}
-							</Typography>
-							<Typography variant="body2">
-								Quantity: x{item.quantity}
-							</Typography>
-							<Button
-								id={item.id}
-								onClick={(e) =>
-									removeProductFromCart(e.target.id)
-								}
-							>
-								Remove
-							</Button>
-							<Button
-								id={item.id}
-								onClick={(e) =>
-									increaseProductQuantity(e.target.id)
-								}
-							>
-								Increase
-							</Button>
-							<Button
-								id={item.id}
-								onClick={(e) =>
-									decreaseProductQuantity(e.target.id)
-								}
-							>
-								Decrease
-							</Button>
-							{/* <Box>
-                <Button variant="contained" onClick={cancelOrder}>
-                  Cancel Order
-                </Button>
-              </Box> */}
-						</Box>
-					);
-				})}
-			Login to checkout
-		</Box>
+		<Stack sx={{ alignItems: "center", gap: 4 }}>
+			{/* Order Total */}
+			<Typography variant="h4" sx={{ mt: 4, color: "primary.main" }}>
+				Order Total: ${getCartTotal(cart)}.00
+			</Typography>
+
+			{/* Products In The Cart  */}
+			<Grid
+				container
+				gap={2}
+				justifyContent="center"
+				textAlign="center"
+				mt={4}
+			>
+				{window.sessionStorage.cart &&
+					cart.map((product) => {
+						return (
+							<Grid item key={product.id}>
+								<Card>
+									<CardMedia
+										image={product.image}
+										alt={product.name}
+										sx={{
+											height: 320,
+											objectFit: "fill", // makes the image fit perfectly into the card
+											transition: "opacity 0.3s ease",
+											"&:hover": {
+												opacity: 0.2,
+											},
+											width: { xs: 300, sm: 320 },
+											mb: 2,
+										}}
+										component="img"
+									/>{" "}
+									<Typography variant="h4">
+										{product.name}
+									</Typography>
+									<Stack
+										flexDirection="row"
+										justifyContent="space-around"
+									>
+										<Typography
+											variant="body2"
+											fontWeight="bold"
+										>
+											Price: ${product.price}
+										</Typography>
+										<Typography
+											variant="body2"
+											fontWeight="bold"
+										>
+											Quantity: {product.quantity}
+										</Typography>
+									</Stack>
+									<ButtonGroup
+										sx={{
+											width: { xs: 300, sm: 320 },
+											mt: 2,
+										}}
+									>
+										<Button
+											variant="contained"
+											color="primary"
+											id={product.id}
+											onClick={() =>
+												removeProductFromCart(
+													product.id
+												)
+											}
+											sx={{ flexGrow: 1 }}
+										>
+											Remove
+										</Button>
+										<Button
+											variant="contained"
+											color="primary"
+											id={product.id}
+											onClick={() =>
+												increaseProductQuantity(
+													product.id
+												)
+											}
+										>
+											Increase
+										</Button>
+										<Button
+											variant="contained"
+											color="primary"
+											id={product.id}
+											onClick={() =>
+												decreaseProductQuantity(
+													product.id
+												)
+											}
+										>
+											Decrease
+										</Button>
+									</ButtonGroup>
+								</Card>
+							</Grid>
+						);
+					})}
+			</Grid>
+
+			{/* Link To Login Page */}
+			<Button variant="contained" component={Link} to="/login">
+				<Typography variant="h5">Login To Check Out</Typography>
+			</Button>
+		</Stack>
 	);
 };
 
@@ -236,7 +298,7 @@ const Cart = () => {
 
 	const handleProductIncrease = async (productId) => {
 		if (token) {
-			const data = await increaseProductQuantity(Number(productId));
+			await increaseProductQuantity(Number(productId));
 		} else {
 			const cart = JSON.parse(window.sessionStorage.cart);
 			cart[productId].quantity++;
@@ -247,8 +309,7 @@ const Cart = () => {
 
 	const handleProductDecrease = async (productId) => {
 		if (token) {
-			const data = await decreaseProductQuantity(Number(productId));
-			return data;
+			await decreaseProductQuantity(Number(productId));
 		} else {
 			const cart = JSON.parse(window.sessionStorage.cart);
 			cart[productId].quantity--;
@@ -259,8 +320,7 @@ const Cart = () => {
 
 	const handleProductRemoval = async (productId) => {
 		if (token) {
-			const data = await removeProductFromCart(Number(productId));
-			return data;
+			await removeProductFromCart(Number(productId));
 		} else {
 			const cart = JSON.parse(window.sessionStorage.cart);
 			delete cart[productId];
@@ -269,17 +329,17 @@ const Cart = () => {
 		}
 	};
 
-	const handleCancelOrder = () => {
+	const handleCancelOrder = async () => {
 		if (token) {
-			cancelOrder();
+			await cancelOrder();
 		} else {
 			window.sessionStorage.removeItem("cart");
 			setCart([]);
 		}
 	};
 
-	const handleCheckoutOrder = () => {
-		if (token) checkoutOrder();
+	const handleCheckoutOrder = async () => {
+		if (token) await checkoutOrder();
 	};
 
 	// if user is logged in show LoggedInUserCart, else show LoggedOutUserCart
@@ -294,9 +354,7 @@ const Cart = () => {
 			increaseProductQuantity={handleProductIncrease}
 			decreaseProductQuantity={handleProductDecrease}
 			removeProductFromCart={handleProductRemoval}
-			//   cancelOrder={handleCancelOrder}
 			checkoutOrder={handleCheckoutOrder}
-			cart={cart}
 		/>
 	);
 };

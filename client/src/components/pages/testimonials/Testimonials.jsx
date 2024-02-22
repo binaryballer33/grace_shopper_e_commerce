@@ -200,6 +200,11 @@ const Testimonials = () => {
 						width: { xs: "90%", md: "25%" },
 						minHeight: { xs: "33dvh", sm: "100dvh" },
 						p: 2,
+						/* use flex and alignSelf: "strech" on the immediate child of the parent flex container
+						 *  to make the box take up the remaining space
+						 */
+						display: "flex",
+						alignSelf: "stretch",
 					}}
 				>
 					<Box

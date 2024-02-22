@@ -1,5 +1,7 @@
 # Grace Shopper E-Commerce Project
 
+Hosted Here: <https://grace-shopper-e-commerce.onrender.com/>
+
 ## Tech Stack
 
 - React v18.2
