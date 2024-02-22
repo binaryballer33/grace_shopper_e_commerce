@@ -11,7 +11,7 @@ const Orders = ({ orders }) => {
 					<OrderItem
 						key={order.id}
 						order={order}
-						orderTotal={getOrderTotal(order.itemInfo)}
+						orderTotal={getOrderTotal(order?.itemInfo)}
 					/>
 				);
 			})}

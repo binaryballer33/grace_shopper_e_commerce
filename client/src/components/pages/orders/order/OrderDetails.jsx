@@ -54,12 +54,12 @@ const OrderDetails = () => {
 					variant="h4"
 					sx={{ color: "primary.dark", ml: { xs: 0, md: 4 } }}
 				>
-					Order Total: ${getOrderTotal(order.itemInfo)}
+					Order Total: ${getOrderTotal(order?.itemInfo)}
 				</Typography>
 			</Stack>
 
 			<Grid container gap={2} justifyContent="center">
-				{order.itemInfo.map((item) => {
+				{order?.itemInfo.map((item) => {
 					return (
 						<Grid item key={item.productId}>
 							<ProductItem
@@ -103,7 +103,7 @@ const OrderDetails = () => {
 							},
 						}}
 					>
-						{order.itemInfo.map((item) => (
+						{order?.itemInfo.map((item) => (
 							<TableRow
 								key={item.productId}
 								sx={{
