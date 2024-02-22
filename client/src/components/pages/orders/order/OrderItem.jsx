@@ -84,10 +84,10 @@ const OrderItem = ({ order, orderTotal, ...props }) => {
 							{/* Add The First 3 Products To The Card, Put A  "..." after the final item  */}
 							<Box>
 								<Typography variant="body1" color="initial">
-									{order.itemInfo.map((item, index) => {
+									{order?.itemInfo.map((item, index) => {
 										if (index < 3) {
 											return index !==
-												order.itemInfo.length - 1
+												order?.itemInfo.length - 1
 												? `${item.itemDescription.name}, `
 												: `${item.itemDescription.name}...`;
 										}

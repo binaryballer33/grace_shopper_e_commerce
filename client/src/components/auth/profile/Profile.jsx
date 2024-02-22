@@ -62,7 +62,8 @@ const ProfileSuccess = ({ user }) => {
 							color="primary"
 							sx={{ textDecoration: "none", mb: 3, p: 2 }}
 						>
-							Products In Cart: {orders.incart[0].itemInfo.length}
+							Products In Cart:
+							{orders.incart[0]?.itemInfo.length}
 						</Typography>
 					</Stack>
 				</Grid>
