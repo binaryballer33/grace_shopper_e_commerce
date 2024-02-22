@@ -8,6 +8,23 @@ import {
 } from "@mui/material";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 
+// TODO: fix styling for page
+const RenderStars = ({ amountOfStars }) => {
+	return Array.from({ length: amountOfStars || 5 }).map((_, i) => (
+		<StarBorderIcon
+			key={i}
+			sx={{
+				color: "gold",
+				p: 0.5,
+				transition: "opacity 0.3s ease",
+				"&:hover": {
+					color: "goldenrod",
+				},
+			}}
+		/>
+	));
+};
+
 const Testimonials = () => {
 	// Array of testimonies
 	const testimonies = [
@@ -46,7 +63,7 @@ const Testimonials = () => {
 				textAlign="center"
 				mt={2}
 			>
-				What Our Customers Are Saying
+				What Are Customers Are Saying
 			</Typography>
 			<Stack
 				sx={{
@@ -97,24 +114,9 @@ const Testimonials = () => {
 										secondary={`- ${testimonies[0].author}, ${testimonies[0].company}`}
 									/>
 								</ListItem>
-								<StarBorderIcon
-									sx={{ color: "gold", p: 0.5 }}
-								/>
-								<StarBorderIcon
-									sx={{ color: "gold", p: 0.5 }}
-								/>
-								<StarBorderIcon
-									sx={{ color: "gold", p: 0.5 }}
-								/>
-								<StarBorderIcon
-									sx={{ color: "gold", p: 0.5 }}
-								/>
-								<StarBorderIcon
-									sx={{ color: "gold", p: 0.5 }}
-								/>
+								<RenderStars amountOfStars={5} />
 							</Paper>
 						</Box>
-
 						{/* Top Row Right Box */}
 						<Box
 							sx={{
@@ -133,22 +135,10 @@ const Testimonials = () => {
 										secondary={`- ${testimonies[1].author}, ${testimonies[1].company}`}
 									/>
 								</ListItem>
-								<StarBorderIcon
-									sx={{ color: "gold", p: 0.5 }}
-								/>
-								<StarBorderIcon
-									sx={{ color: "gold", p: 0.5 }}
-								/>
-								<StarBorderIcon
-									sx={{ color: "gold", p: 0.5 }}
-								/>
-								<StarBorderIcon
-									sx={{ color: "gold", p: 0.5 }}
-								/>
+								<RenderStars amountOfStars={4} />
 							</Paper>
 						</Box>
 					</Stack>
-
 					{/* Bottom Row */}
 					<Stack
 						sx={{
@@ -160,7 +150,7 @@ const Testimonials = () => {
 						{/* Bottom Row Left Box */}
 						<Box
 							sx={{
-								width: { xs: "calc(100% - 34px)", md: "70%" },
+								width: { xs: "calc(100% - 34px)", md: "30%" },
 								minHeight: { xs: 0, md: 300 }, // min height 0px on xs to allow the box to shrink and not exceed the 50dvh
 								border: "1px solid black",
 								borderRadius: 3,
@@ -177,18 +167,9 @@ const Testimonials = () => {
 										secondary={`- ${testimonies[2].author}, ${testimonies[2].company}`}
 									/>
 								</ListItem>
-								<StarBorderIcon
-									sx={{ color: "gold", p: 0.5 }}
-								/>
-								<StarBorderIcon
-									sx={{ color: "gold", p: 0.5 }}
-								/>
-								<StarBorderIcon
-									sx={{ color: "gold", p: 0.5 }}
-								/>
+								<RenderStars amountOfStars={3} />
 							</Paper>
 						</Box>
-
 						{/* Bottom Row Right Box */}
 						<Box
 							sx={{
@@ -208,24 +189,11 @@ const Testimonials = () => {
 										secondary={`- ${testimonies[3].author}, ${testimonies[3].company}`}
 									/>
 								</ListItem>
-								<StarBorderIcon
-									sx={{ color: "gold", p: 0.5 }}
-								/>
-								<StarBorderIcon
-									sx={{ color: "gold", p: 0.5 }}
-								/>
-								<StarBorderIcon
-									sx={{ color: "gold", p: 0.5 }}
-									
-								/>
-								<StarBorderIcon
-									sx={{ color: "gold", p: 0.5 }}
-								/>
+								<RenderStars amountOfStars={4} />
 							</Paper>
 						</Box>
 					</Stack>
 				</Box>
-
 				{/* Right Side, Side Content */}
 				<Box
 					sx={{
@@ -257,15 +225,7 @@ const Testimonials = () => {
 									secondary={`- ${testimonies[4].author}, ${testimonies[4].company}`}
 								/>
 							</ListItem>
-							<StarBorderIcon
-									sx={{ color: "gold", p: 0.5 }}
-								/>
-								<StarBorderIcon
-									sx={{ color: "gold", p: 0.5 }}
-								/>
-								<StarBorderIcon
-									sx={{ color: "gold", p: 0.5 }}
-								/>
+							<RenderStars amountOfStars={5} />
 						</Paper>
 					</Box>
 				</Box>
