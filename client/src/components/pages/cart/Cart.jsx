@@ -40,6 +40,17 @@ const LoggedOutUserCart = ({
 	checkoutOrder, // this probably should be used for a logged out user too
 	cart,
 }) => {
+	function generateUUID() {
+		return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+			/[xy]/g,
+			function (c) {
+				var r = (Math.random() * 16) | 0,
+					v = c === "x" ? r : (r & 0x3) | 0x8;
+				return v.toString(16);
+			}
+		);
+	}
+
 	return (
 		<Box>
 			{window.sessionStorage.cart &&
@@ -138,7 +149,7 @@ const LoggedInUserCart = ({
 					<Typography
 						variant={isSmallScreen ? "h4" : "h3"}
 						color="primary.main"
-						sx={{ mt: { xs: 4, sm: 0 }, mb: { xs: 4, md: 0 } }}
+						sx={{ mt: { xs: 4, sm: 2 }, mb: { xs: 4, md: 2 } }}
 					>
 						Cart Order ID: {order.id}
 					</Typography>
@@ -167,10 +178,6 @@ const LoggedInUserCart = ({
 										<Button
 											variant="contained"
 											onClick={() => {
-												console.log(
-													"the product id is",
-													order.productId
-												);
 												removeProductFromCart(
 													order.productId
 												);
@@ -230,7 +237,6 @@ const Cart = () => {
 	const handleProductIncrease = async (productId) => {
 		if (token) {
 			const data = await increaseProductQuantity(Number(productId));
-			console.log("Clicked Product Increase Button Data: ", data);
 		} else {
 			const cart = JSON.parse(window.sessionStorage.cart);
 			cart[productId].quantity++;
@@ -242,7 +248,6 @@ const Cart = () => {
 	const handleProductDecrease = async (productId) => {
 		if (token) {
 			const data = await decreaseProductQuantity(Number(productId));
-			console.log("Clicked Product Decrease Button Data: ", data);
 			return data;
 		} else {
 			const cart = JSON.parse(window.sessionStorage.cart);
@@ -255,7 +260,6 @@ const Cart = () => {
 	const handleProductRemoval = async (productId) => {
 		if (token) {
 			const data = await removeProductFromCart(Number(productId));
-			console.log("Clicked Product Removal Button Data: ", data);
 			return data;
 		} else {
 			const cart = JSON.parse(window.sessionStorage.cart);

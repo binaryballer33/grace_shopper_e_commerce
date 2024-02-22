@@ -1,6 +1,5 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-
 import dotenv from "dotenv";
 import dotenvExpand from "dotenv-expand";
 
@@ -12,18 +11,13 @@ import dotenvExpand from "dotenv-expand";
 const env = dotenv.config({ path: "./.env" });
 dotenvExpand.expand(env);
 
-// // https://vitejs.dev/config/
-// export default defineConfig({
-// 	plugins: [react()],
-// 	root: "./client",
-// });
-
+// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
-  root: "./client",
-  server: {
-    watch: {
-      usePolling: true,
-    },
-  },
+	plugins: [react()],
+	root: "./client",
+	server: {
+		watch: {
+			usePolling: true,
+		},
+	},
 });
