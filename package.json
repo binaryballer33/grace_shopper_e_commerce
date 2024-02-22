@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "build": "NODE_ENV=production vite --config client/vite.config.js build",
+    "build": "npx prisma generate && NODE_ENV=production vite --config client/vite.config.js build",
     "client": "vite --config client/vite.config.js",
     "client:dev": "npm run client",
     "client:prod": "NODE_ENV=production vite --config client/vite.config.js",
