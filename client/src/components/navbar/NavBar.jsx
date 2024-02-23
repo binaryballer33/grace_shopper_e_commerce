@@ -12,8 +12,9 @@ import {
 	Tooltip,
 	MenuItem,
 	Menu,
-	Stack,
 	Divider,
+	useTheme,
+	useMediaQuery,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import PersonIcon from "@mui/icons-material/Person";
@@ -26,8 +27,12 @@ const NavBar = () => {
 		window.sessionStorage.getItem(USER_CREDENTIALS)
 	) || { token: "", user: {} };
 
+	// modify the theme based on the screen size
+	const theme = useTheme();
+	const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
 	// links and account options
-	const pages = ["Testimonials", "Contact"];
+	const pages = ["Products", "Testimonials", "Contact"];
 	// show the correct options based on the user's login status
 	const settings = token
 		? ["Cart", "Profile", "Log Out"]
@@ -128,29 +133,22 @@ const NavBar = () => {
 								borderRadius: "50%",
 							}}
 						/>
-					</Button>
-					<Typography
-						variant="h6"
-						noWrap
-						component={Link}
-						to="/products"
-						sx={{
-							display: "flex",
-							fontWeight: 700,
-							letterSpacing: ".2rem",
-							color: "white",
-							textDecoration: "none",
-						}}
-					>
-						<Stack
+						<Typography
+							variant="h6"
+							noWrap
 							sx={{
-								justifyContent: "center",
-								alignItems: "center",
+								display: "flex",
+								letterSpacing: "2px",
+								color: "white",
+								textDecoration: "none",
+								ml: 1,
 							}}
 						>
-							Products
-						</Stack>
-					</Typography>
+							{isSmallScreen
+								? "M.A.S Fruit"
+								: "M.A.S Fruit Market"}
+						</Typography>
+					</Button>
 
 					{/* create the NavBar links in the pages array */}
 					<Box

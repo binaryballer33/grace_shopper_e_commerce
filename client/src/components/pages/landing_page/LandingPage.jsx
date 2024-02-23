@@ -11,10 +11,8 @@ import { BestSellers } from "../../../components";
 
 const LandingPage = () => {
 	const theme = createTheme();
-	const typographyVariant = useMediaQuery(theme.breakpoints.down("sm"))
-		? "h4"
-		: "h2";
-	const landingPageText = "Welcome To The A.M.S Fruit Market";
+	const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+	const landingPageText = "Welcome To The M.A.S Fruit Market";
 
 	return (
 		<Stack>
@@ -67,7 +65,7 @@ const LandingPage = () => {
 					{landingPageText.split("").map((letter, index) => (
 						<Typography
 							key={index}
-							variant={typographyVariant}
+							variant={isSmallScreen ? "h4" : "h2"}
 							component="span"
 							sx={{
 								color: "primary.main",
@@ -104,7 +102,7 @@ const LandingPage = () => {
 				{/* Field Image and Text */}
 				<Stack m="5rem 0rem" p={2} alignItems="center">
 					<Typography
-						variant={typographyVariant}
+						variant={isSmallScreen ? "h4" : "h2"}
 						textAlign="center"
 						mb={2}
 						sx={{ color: "primary.main" }}

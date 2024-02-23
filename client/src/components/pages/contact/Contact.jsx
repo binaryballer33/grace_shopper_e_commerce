@@ -5,7 +5,6 @@ import TwitterIcon from "@mui/icons-material/Twitter";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import shaq from "../../../assets/shaq.jpg";
 
-// TODO: fix styling
 const Contact = () => {
 	return (
 		<Stack alignItems="center" justifyContent="center">
