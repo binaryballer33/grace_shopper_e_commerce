@@ -44,6 +44,9 @@ const Contact = () => {
 							aria-label="Facebook"
 							sx={{
 								color: "white",
+								"&.MuiIconButton-root:hover": {
+									backgroundColor: "transparent",
+								},
 							}}
 						>
 							<FacebookIcon />
@@ -76,6 +79,9 @@ const Contact = () => {
 							aria-label="Instagram"
 							sx={{
 								color: "white",
+								"&.MuiIconButton-root:hover": {
+									backgroundColor: "transparent",
+								},
 							}}
 						>
 							<InstagramIcon />
@@ -108,6 +114,9 @@ const Contact = () => {
 							aria-label="Twitter"
 							sx={{
 								color: "white",
+								"&.MuiIconButton-root:hover": {
+									backgroundColor: "transparent",
+								},
 							}}
 						>
 							<TwitterIcon />
@@ -117,11 +126,11 @@ const Contact = () => {
 			</Grid>
 
 			<Typography
-				variant="h6"
+				variant="h5"
 				color="primary.main"
 				sx={{ marginTop: 6, marginBottom: 2 }}
 			>
-				Other ways to contact us
+				Other Ways To Contact Us
 			</Typography>
 
 			{/* Existing ContactCard components */}

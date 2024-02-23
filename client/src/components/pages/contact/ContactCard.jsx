@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 import { Card, CardContent, Typography, Stack, CardMedia } from "@mui/material";
 
-// TODO: fix styling
 const ContactCard = ({ name, email, phone, linkedin, image }) => {
 	const IMG_URL =
 		"https://www.shutterstock.com/image-illustration/no-picture-available-placeholder-thumbnail-600nw-2179364083.jpg";
@@ -31,26 +30,36 @@ const ContactCard = ({ name, email, phone, linkedin, image }) => {
 					}}
 					component="img"
 				/>
-				<Stack spacing={5} alignItems="center">
+				<Stack
+					spacing={5}
+					alignItems="center"
+					bgcolor="#f3f3f3"
+					color="primary.main"
+					minHeight={300}
+					p={2}
+				>
 					<Typography variant="h5" gutterBottom textAlign="center">
 						{name}
 					</Typography>
 					<Typography variant="body1" gutterBottom>
-						Email: {email}
+						<span style={{ fontWeight: "bold" }}>Email: </span>
+						{email}
 					</Typography>
 					<Typography
 						variant="body1"
 						gutterBottom
 						style={{ marginBottom: "8px" }}
 					>
-						Phone: {phone}
+						<span style={{ fontWeight: "bold" }}>Phone: </span>
+						{phone}
 					</Typography>
 					<Typography
 						variant="body1"
 						gutterBottom
 						style={{ marginBottom: "8px" }}
 					>
-						LinkedIn: {linkedin}
+						<span style={{ fontWeight: "bold" }}>LinkedIn: </span>
+						{linkedin}
 					</Typography>
 				</Stack>
 			</CardContent>

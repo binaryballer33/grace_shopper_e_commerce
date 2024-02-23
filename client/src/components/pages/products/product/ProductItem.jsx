@@ -150,7 +150,7 @@ const ProductItem = ({ product, quantity, ...props }) => {
 								},
 							}}
 						>
-							<Tooltip title="Checkout" placement="bottom">
+							<Tooltip title="Add To Cart" placement="bottom">
 								<AddShoppingCartIcon
 									sx={{
 										color: "primary.main",
@@ -176,7 +176,7 @@ const ProductItem = ({ product, quantity, ...props }) => {
 							onClick={decreaseProductQuantityHandler}
 						>
 							<Tooltip
-								title="Delete Reservation"
+								title="Decrease Quantity"
 								placement="bottom"
 							>
 								<RemoveIcon

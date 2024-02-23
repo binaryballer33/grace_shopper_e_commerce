@@ -58,7 +58,7 @@ const LandingPage = () => {
 				<Box
 					sx={{
 						position: "absolute",
-						top: { xs: "35%", md: "50%" },
+						top: { xs: "25%", sm: "30%", md: "50%" },
 						left: "50%",
 						transform: "translate(-50%, -50%)",
 					}}
@@ -107,6 +107,7 @@ const LandingPage = () => {
 						variant={typographyVariant}
 						textAlign="center"
 						mb={2}
+						sx={{ color: "primary.main" }}
 					>
 						Cultivation Process
 					</Typography>
