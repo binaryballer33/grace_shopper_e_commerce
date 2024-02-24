@@ -7,6 +7,11 @@ function randomNumberBetweeen(number1, number2) {
 	return Math.floor(Math.random() * (number2 - number1 + 1) + number1);
 }
 
+export const FRONTEND_BASE_URL =
+	process.env.NODE_ENV !== "production"
+		? process.env.VITE_DEVELOPMENT_FRONTEND_BASE_URL
+		: process.env.VITE_PRODUCTION_FRONTEND_BASE_URL;
+
 const IMG_URL =
 	"https://www.shutterstock.com/image-illustration/no-picture-available-placeholder-thumbnail-600nw-2179364083.jpg";
 

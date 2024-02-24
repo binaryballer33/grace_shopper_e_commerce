@@ -221,22 +221,25 @@ export const getOrders = async (id) => {
 	return { cancelled, fulfilled, incart };
 };
 
-//will call this to either cancel an order or fulfill an order
+// will call this to either cancel an order or fulfill an order
 export const checkoutOrder = async (id, type) => {
 	try {
-		//get incart status for the user
+		// get the current order in the cart for the user
 		const inCart = await prisma.orders.findFirst({
 			where: {
 				userId: id,
 				status: "inCart",
 			},
 		});
-		//get all the products in the cart
+
+		// TODO: this might not be necessary, seems like inCart already has the information being returned here
+		// get all the products in the cart
 		const inCartItems = await prisma.productsInOrder.findMany({
 			where: {
 				orderId: inCart.id,
 			},
 		});
+
 		// get all the product info in the cart
 		const inCartItemsWithDescription = [];
 		for (let item of inCartItems) {
@@ -249,7 +252,7 @@ export const checkoutOrder = async (id, type) => {
 				}),
 			});
 		}
-		//update order to be fulfilled
+		// update order to be fulfilled
 		await prisma.orders.update({
 			where: {
 				id: inCart.id,

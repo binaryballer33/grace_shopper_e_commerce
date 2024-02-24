@@ -61,7 +61,7 @@ const orderApi = api.injectEndpoints({
 		checkoutOrder: builder.mutation({
 			query: () => ({
 				url: getCheckoutOrderRoute(),
-				method: "PUT",
+				method: "POST",
 			}),
 			invalidatesTags: [{ type: "Cart", id: "LIST" }],
 		}),

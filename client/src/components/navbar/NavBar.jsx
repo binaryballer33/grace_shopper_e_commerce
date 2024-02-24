@@ -38,11 +38,11 @@ const NavBar = () => {
 		? ["Cart", "Profile", "Log Out"]
 		: ["Cart", "Log In", "Register"];
 
-	// state variables
+	// state variables opening and closing menus in the nav bar
 	const [anchorElNav, setAnchorElNav] = useState(null);
 	const [anchorElUser, setAnchorElUser] = useState(null);
 
-	// handlers
+	// handlers for opening and closing menus in the nav bar
 	const handleOpenNavMenu = (event) => {
 		setAnchorElNav(event.currentTarget);
 	};

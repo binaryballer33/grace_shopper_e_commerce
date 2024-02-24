@@ -15,18 +15,18 @@ const Checkout = () => {
 			}}
 		>
 			{/* Back To The Previous Page Button */}
-			<IconButton onClick={() => navigate(-1)}>
+			<IconButton onClick={() => navigate("/")}>
 				<ArrowBackIcon
 					fontSize="large"
 					sx={{ color: "primary.main", mr: { xs: 0, md: 2 } }}
 				/>
 			</IconButton>
 			<Typography
-				variant="h2"
+				variant="h4"
 				color="primary.main"
 				sx={{ ml: { xs: 0, md: 2 } }}
 			>
-				Checkout
+				Thank You For Shopping With M.A.S Fruit Market
 			</Typography>
 		</Stack>
 	);

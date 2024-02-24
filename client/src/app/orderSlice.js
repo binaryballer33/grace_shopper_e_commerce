@@ -48,6 +48,32 @@ const orderSlice = createSlice({
 			}
 		);
 		builder.addMatcher(
+			orderApi.endpoints.addProductToCart.matchFulfilled,
+			(state, { payload }) => {
+				state.order = payload.order.order;
+				state.items = payload.order.items.map((item) => {
+					return {
+						orderId: item.orderId,
+						productId: item.productId,
+						quantity: item.quantity,
+						itemDescription: item.itemInfo,
+					};
+				});
+
+				// update the session storage
+				const sessionStorage = JSON.parse(
+					window.sessionStorage.getItem(USER_CREDENTIALS)
+				);
+				sessionStorage.order = payload.order.order;
+				sessionStorage.items = payload.order.items;
+
+				window.sessionStorage.setItem(
+					USER_CREDENTIALS,
+					JSON.stringify(sessionStorage)
+				);
+			}
+		);
+		builder.addMatcher(
 			orderApi.endpoints.decreaseProductQuantity.matchFulfilled,
 			(state, { payload }) => {
 				state.order = payload.order.order;
@@ -62,6 +88,18 @@ const orderSlice = createSlice({
 							: item;
 					})
 					.filter((item) => item.quantity);
+
+				// update the session storage
+				const sessionStorage = JSON.parse(
+					window.sessionStorage.getItem(USER_CREDENTIALS)
+				);
+				sessionStorage.order = payload.order.order;
+				sessionStorage.items = payload.order.items;
+
+				window.sessionStorage.setItem(
+					USER_CREDENTIALS,
+					JSON.stringify(sessionStorage)
+				);
 			}
 		);
 		builder.addMatcher(
@@ -76,6 +114,18 @@ const orderSlice = createSlice({
 						itemDescription: item.itemInfo,
 					};
 				});
+
+				// update the session storage
+				const sessionStorage = JSON.parse(
+					window.sessionStorage.getItem(USER_CREDENTIALS)
+				);
+				sessionStorage.order = payload.order.order;
+				sessionStorage.items = payload.order.items;
+
+				window.sessionStorage.setItem(
+					USER_CREDENTIALS,
+					JSON.stringify(sessionStorage)
+				);
 			}
 		);
 		builder.addMatcher(
@@ -90,20 +140,6 @@ const orderSlice = createSlice({
 			(state) => {
 				state.order = {};
 				state.items = [];
-			}
-		);
-		builder.addMatcher(
-			orderApi.endpoints.addProductToCart.matchFulfilled,
-			(state, { payload }) => {
-				state.order = payload.order.order;
-				state.items = payload.order.items.map((item) => {
-					return {
-						orderId: item.orderId,
-						productId: item.productId,
-						quantity: item.quantity,
-						itemDescription: item.itemInfo,
-					};
-				});
 			}
 		);
 		builder.addMatcher(

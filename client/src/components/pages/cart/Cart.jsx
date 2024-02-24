@@ -22,7 +22,7 @@ import {
 } from "../../../api/orderApi";
 import { Loading, ProductItem } from "../../../components";
 import { getOrderTotal } from "../../../utils/helper_functions";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const CartFailure = () => {
 	return (
@@ -167,20 +167,21 @@ const LoggedOutUserCart = ({
 const LoggedInUserCart = ({
 	removeProductFromCart,
 	cancelOrder,
-	checkoutOrder,
+	// checkoutOrder,
 }) => {
-	const navigate = useNavigate();
 	const { data, isLoading, refetch } = useGetCartQuery();
 	const theme = useTheme();
 	const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+	const [checkoutOrder] = useCheckoutOrderMutation();
 
 	// get product order information
 	const productsInOrder = data?.order?.orderDetailsWithDescriptions;
 	const order = data?.order.order;
 
+	// go through the checkout process
 	const handleCheckout = async () => {
-		await checkoutOrder();
-		navigate("/checkout");
+		const response = await checkoutOrder(); // send the order to the server
+		window.location.href = response.data.checkoutUrl; // navigate to the checkout page
 	};
 
 	return (
@@ -287,7 +288,6 @@ const Cart = () => {
 	const [decreaseProductQuantity] = useDecreaseProductQuantityMutation();
 	const [removeProductFromCart] = useRemoveProductFromCartMutation();
 	const [cancelOrder] = useCancelOrderMutation();
-	const [checkoutOrder] = useCheckoutOrderMutation();
 
 	useEffect(() => {
 		const updateCart = () => {
@@ -338,23 +338,17 @@ const Cart = () => {
 		}
 	};
 
-	const handleCheckoutOrder = async () => {
-		if (token) await checkoutOrder();
-	};
-
 	// if user is logged in show LoggedInUserCart, else show LoggedOutUserCart
 	return token ? (
 		<LoggedInUserCart
 			removeProductFromCart={handleProductRemoval}
 			cancelOrder={handleCancelOrder}
-			checkoutOrder={handleCheckoutOrder}
 		/>
 	) : (
 		<LoggedOutUserCart
 			increaseProductQuantity={handleProductIncrease}
 			decreaseProductQuantity={handleProductDecrease}
 			removeProductFromCart={handleProductRemoval}
-			checkoutOrder={handleCheckoutOrder}
 		/>
 	);
 };

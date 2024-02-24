@@ -1,5 +1,5 @@
 import express from "express";
-import prisma, {
+import {
 	checkoutOrder,
 	updateCart,
 	updateQuantity,
@@ -7,7 +7,11 @@ import prisma, {
 	getIncartOrder,
 } from "../db/index.js";
 import { verifyToken } from "../middleware/middleware.js";
+import stripe from "stripe";
+import { FRONTEND_BASE_URL } from "../db/constants.js";
+
 const cartRouter = express.Router();
+const stripePayment = stripe(process.env.VITE_STRIPE_SECRET_KEY);
 
 //GET /incart all incart orders of user
 cartRouter.get("/incart", verifyToken, async (req, res, next) => {
@@ -43,24 +47,49 @@ cartRouter.get("/incart", verifyToken, async (req, res, next) => {
 });
 
 //PUT /checkout - checks out items in the cart
-cartRouter.put("/checkout", verifyToken, async (req, res, next) => {
+cartRouter.post("/checkout", verifyToken, async (req, res, next) => {
 	try {
+		// check if user is logged in
 		if (!req.user)
 			return res.status(400).send({
 				message: "User not logged in",
 				status: res.statusCode,
 			});
+
+		// check if user has an incart order
 		const inCart = await checkoutOrder(req.user.id, "inCart");
+
+		// create the checkout session with stripe
+		const checkoutSession = await stripePayment.checkout.sessions.create({
+			payment_method_types: ["card"],
+			mode: "payment",
+			success_url: `${FRONTEND_BASE_URL}/checkout`,
+			cancel_url: `${FRONTEND_BASE_URL}/checkout`,
+			line_items: inCart.items.map((item) => ({
+				price_data: {
+					currency: "usd",
+					product_data: {
+						name: item.itemInfo.name,
+						images: [item.itemInfo.image],
+					},
+					unit_amount: item.itemInfo.price * 100, // stripe uses cents
+				},
+				quantity: item.quantity,
+			})),
+		});
+
+		// send the response
 		res.status(200).send({
 			message: "Successfully checkout order",
 			order: inCart,
+			checkoutUrl: checkoutSession.url,
 		});
 	} catch (error) {
 		next(error);
 	}
 });
 
-//PUT /cancel - cancel an inCart order
+// PUT /cancel - cancel an inCart order
 cartRouter.put("/cancel", verifyToken, async (req, res, next) => {
 	try {
 		if (!req.user)
@@ -78,7 +107,7 @@ cartRouter.put("/cancel", verifyToken, async (req, res, next) => {
 	}
 });
 
-//PUT /update - add item into cart inital quanity as 1
+// PUT /update - add item into cart inital quanity as 1
 cartRouter.put("/add", verifyToken, async (req, res, next) => {
 	try {
 		if (!req.user)
@@ -96,7 +125,7 @@ cartRouter.put("/add", verifyToken, async (req, res, next) => {
 	}
 });
 
-//PUT /delete - remove item from cart
+// PUT /delete - remove item from cart
 cartRouter.put("/delete", verifyToken, async (req, res, next) => {
 	try {
 		if (!req.user)
@@ -114,7 +143,7 @@ cartRouter.put("/delete", verifyToken, async (req, res, next) => {
 	}
 });
 
-//addquantity
+// addquantity
 cartRouter.put("/updateUp", verifyToken, async (req, res, next) => {
 	try {
 		if (!req.user)
@@ -136,7 +165,7 @@ cartRouter.put("/updateUp", verifyToken, async (req, res, next) => {
 	}
 });
 
-//deletequanity
+// deletequanity
 cartRouter.put("/updateDown", verifyToken, async (req, res, next) => {
 	try {
 		if (!req.user)
@@ -158,12 +187,12 @@ cartRouter.put("/updateDown", verifyToken, async (req, res, next) => {
 	}
 });
 
-//POST /addCart - if user is not logged in, the cart is saved in session storage, once logged in add session cart to db, call this when user logs in
-//session storage will look like session:{cart:[{productid,quantity},{productid,quantity},{productid,quantity}]}
-//if session storage empty do nothing
-//if user has an empty cart, create order and add items to cart
-//if user has a cart without items, add items to cart
-//if user has a cart with items, replace items and add new items
+// POST /addCart - if user is not logged in, the cart is saved in session storage, once logged in add session cart to db, call this when user logs in
+// session storage will look like session:{cart:[{productid,quantity},{productid,quantity},{productid,quantity}]}
+// if session storage empty do nothing
+// if user has an empty cart, create order and add items to cart
+// if user has a cart without items, add items to cart
+// if user has a cart with items, replace items and add new items
 cartRouter.put("/addCart", verifyToken, async (req, res, next) => {
 	try {
 		return !req.user
