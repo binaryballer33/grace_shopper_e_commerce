@@ -14,7 +14,8 @@
     "server:dev": "npm run server",
     "server:prod": "NODE_ENV=production node server/src/server.js",
     "seed": "node server/src/db/seed.js",
-    "test": "jest"
+    "test": "jest",
+    "email": "email dev --dir ./client/src/components/emails"
   },
   "dependencies": {
     "@emotion/react": "^11.11.3",
@@ -22,6 +23,7 @@
     "@mui/icons-material": "^5.15.6",
     "@mui/material": "^5.15.5",
     "@prisma/client": "^5.9.1",
+    "@react-email/components": "0.0.15",
     "@reduxjs/toolkit": "^2.0.1",
     "axios": "^1.6.7",
     "bcrypt": "^5.1.1",
@@ -36,9 +38,11 @@
     "pg": "^8.11.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-email": "2.1.0",
     "react-redux": "^9.1.0",
     "react-router-dom": "^6.16.0",
     "redux-logger": "^3.0.6",
+    "resend": "^3.2.0",
     "stripe": "^14.18.0"
   },
   "devDependencies": {

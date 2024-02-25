@@ -63,6 +63,9 @@ cartRouter.post("/checkout", verifyToken, async (req, res, next) => {
 		const checkoutSession = await stripePayment.checkout.sessions.create({
 			payment_method_types: ["card"],
 			mode: "payment",
+			/*  render will not actually redirect to this page because it causes a refresh
+			 *  and react router will not be able to navigate here, maybe on netlify it will work
+			 */
 			success_url: `${FRONTEND_BASE_URL}/checkout`,
 			cancel_url: `${FRONTEND_BASE_URL}/checkout`,
 			line_items: inCart.items.map((item) => ({

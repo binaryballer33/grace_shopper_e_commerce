@@ -23,6 +23,12 @@ import {
 import { Loading, ProductItem } from "../../../components";
 import { getOrderTotal } from "../../../utils/helper_functions";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import {
+	BACKEND_BASE_URL,
+	USER_CREDENTIALS,
+	getPurchaseConfirmationEmailRoute,
+} from "../../../utils/constant";
 
 const CartFailure = () => {
 	return (
@@ -182,6 +188,27 @@ const LoggedInUserCart = ({
 	const handleCheckout = async () => {
 		const response = await checkoutOrder(); // send the order to the server
 		window.location.href = response.data.checkoutUrl; // navigate to the checkout page
+
+		// send purchase confirmation email
+		const { user } = JSON.parse(
+			window.sessionStorage.getItem(USER_CREDENTIALS)
+		);
+
+		// TODO: convert this into redux toolkit query later also make it work only after payment has been made
+		await axios.post(
+			`${BACKEND_BASE_URL}${getPurchaseConfirmationEmailRoute()}`,
+			{
+				from: "shaqmandy@resend.dev",
+				to: user.username,
+				subject: "Thank You For Your Purchase 🙂",
+				// create the email body, it takes a string of html
+				html: productsInOrder
+					.map((order) => {
+						return `<p>${order.quantity}X ${order.itemDescription.name}</p>`;
+					})
+					.join(""), // make the array into a string
+			}
+		);
 	};
 
 	return (

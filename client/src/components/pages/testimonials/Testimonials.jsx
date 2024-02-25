@@ -8,7 +8,6 @@ import {
 } from "@mui/material";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 
-// TODO: fix styling for page
 const RenderStars = ({ amountOfStars }) => {
 	return Array.from({ length: amountOfStars || 5 }).map((_, i) => (
 		<StarBorderIcon
