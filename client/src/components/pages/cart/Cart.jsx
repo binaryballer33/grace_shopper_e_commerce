@@ -204,7 +204,7 @@ const LoggedInUserCart = ({
 	// go through the checkout process
 	const handleCheckout = async () => {
 		const response = await checkoutOrder(); // send the order to the server
-		window.location.href = response.data.checkoutUrl; // navigate to the checkout page
+		window.location.href = response?.data?.checkoutUrl; // navigate to the checkout page
 
 		if (response) sendEmail();
 	};

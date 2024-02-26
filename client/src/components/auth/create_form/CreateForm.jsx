@@ -19,8 +19,6 @@ import { transformTextField } from "../../../utils/helper_functions";
 import { USER_CREDENTIALS } from "../../../utils/constant";
 import { useInitalAddMutation } from "../../../api/orderApi";
 import { useRegistrationConfirmationEmailMutation } from "../../../api/email";
-import PopupIndicator from "../../state_indicators/PopupIndicator";
-import { useSelector } from "react-redux";
 
 const LoginSuccess = ({ name }) => {
 	return (

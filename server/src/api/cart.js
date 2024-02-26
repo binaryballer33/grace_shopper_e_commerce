@@ -60,32 +60,32 @@ cartRouter.post("/checkout", verifyToken, async (req, res, next) => {
 		const inCart = await checkoutOrder(req.user.id, "inCart");
 
 		// create the checkout session with stripe
-		// const checkoutSession = await stripePayment.checkout.sessions.create({
-		// 	payment_method_types: ["card"],
-		// 	mode: "payment",
-		// 	/*  render will not actually redirect to this page because it causes a refresh
-		// 	 *  and react router will not be able to navigate here, maybe on netlify it will work
-		// 	 */
-		// 	success_url: `${FRONTEND_BASE_URL}/checkout`,
-		// 	cancel_url: `${FRONTEND_BASE_URL}/checkout`,
-		// 	line_items: inCart.items.map((item) => ({
-		// 		price_data: {
-		// 			currency: "usd",
-		// 			product_data: {
-		// 				name: item.itemInfo.name,
-		// 				images: [item.itemInfo.image],
-		// 			},
-		// 			unit_amount: item.itemInfo.price * 100, // stripe uses cents
-		// 		},
-		// 		quantity: item.quantity,
-		// 	})),
-		// });
+		const checkoutSession = await stripePayment.checkout.sessions.create({
+			payment_method_types: ["card"],
+			mode: "payment",
+			/*  render will not actually redirect to this page because it causes a refresh
+			 *  and react router will not be able to navigate here, maybe on netlify it will work
+			 */
+			success_url: `${FRONTEND_BASE_URL}/checkout`,
+			cancel_url: `${FRONTEND_BASE_URL}/checkout`,
+			line_items: inCart.items.map((item) => ({
+				price_data: {
+					currency: "usd",
+					product_data: {
+						name: item.itemInfo.name,
+						images: [item.itemInfo.image],
+					},
+					unit_amount: item.itemInfo.price * 100, // stripe uses cents
+				},
+				quantity: item.quantity,
+			})),
+		});
 
 		// send the response
 		res.status(200).send({
 			message: "Successfully checkout order",
 			order: inCart,
-			// checkoutUrl: checkoutSession.url,
+			checkoutUrl: checkoutSession.url,
 		});
 	} catch (error) {
 		next(error);
