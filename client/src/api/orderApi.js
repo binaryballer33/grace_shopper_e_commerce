@@ -14,7 +14,7 @@ const orderApi = api.injectEndpoints({
 	endpoints: (builder) => ({
 		getCart: builder.query({
 			query: () => getInCartRoute(),
-			providesTags: (result, error, id) => [{ type: "Cart", id: "LIST" }],
+			providesTags: [{ type: "Cart", id: "LIST" }],
 		}),
 		initalAdd: builder.mutation({
 			query: (cart) => ({
@@ -22,6 +22,7 @@ const orderApi = api.injectEndpoints({
 				method: "PUT",
 				body: { cart },
 			}),
+			invalidatesTags: [{ type: "Cart", id: "LIST" }],
 		}),
 		addProductToCart: builder.mutation({
 			query: (productid) => ({
@@ -29,6 +30,7 @@ const orderApi = api.injectEndpoints({
 				method: "PUT",
 				body: { productid },
 			}),
+			invalidatesTags: [{ type: "Cart", id: "LIST" }],
 		}),
 		increaseProductQuantity: builder.mutation({
 			query: (productid) => ({
@@ -36,6 +38,7 @@ const orderApi = api.injectEndpoints({
 				method: "PUT",
 				body: { productid },
 			}),
+			invalidatesTags: [{ type: "Cart", id: "LIST" }],
 		}),
 		decreaseProductQuantity: builder.mutation({
 			query: (productid) => ({
@@ -43,6 +46,7 @@ const orderApi = api.injectEndpoints({
 				method: "PUT",
 				body: { productid },
 			}),
+			invalidatesTags: [{ type: "Cart", id: "LIST" }],
 		}),
 		removeProductFromCart: builder.mutation({
 			query: (productid) => ({
@@ -50,6 +54,7 @@ const orderApi = api.injectEndpoints({
 				method: "PUT",
 				body: { productid },
 			}),
+			invalidatesTags: [{ type: "Cart", id: "LIST" }],
 		}),
 		cancelOrder: builder.mutation({
 			query: () => ({

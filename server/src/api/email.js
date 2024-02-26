@@ -17,8 +17,6 @@ emailRouter.post("/puchaseEmail", async (req, res, next) => {
 			html,
 		});
 
-		console.log("Req Body", req.body);
-
 		// send the response back to the client
 		res.status(200).send({
 			message: "Successfully Sent Purchase Confirmation Email.",
@@ -31,14 +29,6 @@ emailRouter.post("/puchaseEmail", async (req, res, next) => {
 // Create A New Welcome After User Account Registration Email
 emailRouter.post("/registrationEmail", async (req, res, next) => {
 	try {
-		// send the email
-		// await resend.emails.send({
-		// 	from: "onboarding@resend.dev",
-		// 	to: "shaqmandy@gmail.com",
-		// 	subject: "This Ya Boy Shaq Sending A Test Email",
-		// 	html: "<h1>Yurrrrrrrrrrrrr</h1>",
-		// });
-
 		// send the email
 		await resend.emails.send({
 			from: "shaqmandy@resend.dev",

@@ -16,13 +16,11 @@ import ClearIcon from "@mui/icons-material/Clear";
 import { useLoginMutation, useRegisterMutation } from "../../../api/userApi";
 import { Error, Loading } from "../..";
 import { transformTextField } from "../../../utils/helper_functions";
-import {
-	BACKEND_BASE_URL,
-	USER_CREDENTIALS,
-	getUserRegistrationConfirmationEmailRoute,
-} from "../../../utils/constant";
+import { USER_CREDENTIALS } from "../../../utils/constant";
 import { useInitalAddMutation } from "../../../api/orderApi";
-import axios from "axios";
+import { useRegistrationConfirmationEmailMutation } from "../../../api/email";
+import PopupIndicator from "../../state_indicators/PopupIndicator";
+import { useSelector } from "react-redux";
 
 const LoginSuccess = ({ name }) => {
 	return (
@@ -85,8 +83,12 @@ const CreateForm = ({
 	const [login, loginState] = useLoginMutation();
 	const [register, registerState] = useRegisterMutation();
 
-	//adds session cart into user cart
+	// adds session cart into user cart
 	const [cartData] = useInitalAddMutation();
+
+	// mutation to send purchase confirmation email
+	const [registrationConfirmationEmail] =
+		useRegistrationConfirmationEmailMutation();
 
 	// return the correct mutation function and correct state depending on formType
 	function getMutationFunctionAndState(formType) {
@@ -119,22 +121,22 @@ const CreateForm = ({
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 
-		const { error } = await mutationFunction(formData);
+		const authData = await mutationFunction(formData);
 
-		// TODO: convert this into redux toolkit query later, also make it only work after successful registration
-		const data = await axios.post(
-			`${BACKEND_BASE_URL}${getUserRegistrationConfirmationEmailRoute()}`,
-			{
+		// only sending welcome email if registration is successful
+		if (formType === "register" && authData?.data?.user) {
+			const email = {
 				from: "shaqmandy@resend.dev", // might need to change this to "onboarding@resend.dev"
 				to: formData.username,
 				subject: "Welcome to the M.A.S Fruit Market",
 				html: `<p>Thank you for registering with us, ${formData.firstname} ${formData.lastname}! We hope you enjoy your shopping experience with us.</p>`,
-			}
-		);
+			};
 
-		console.log("registration email data", data);
+			// send registration confirmation email
+			await registrationConfirmationEmail(email);
+		}
 
-		if (!error && window.sessionStorage.cart) {
+		if (window.sessionStorage.cart) {
 			const data = Object.values(JSON.parse(window.sessionStorage.cart));
 
 			// {cart:[{productid,quantity},{productid,quantity}, {productid,quantity}]} needs to be sent in this format to backend

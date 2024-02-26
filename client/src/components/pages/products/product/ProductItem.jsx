@@ -18,15 +18,20 @@ import { capitalize } from "../../../../utils/helper_functions";
 import {
 	useAddProductToCartMutation,
 	useDecreaseProductQuantityMutation,
-	useGetCartQuery,
 } from "../../../../api/orderApi";
+import PopupIndicator from "../../../state_indicators/PopupIndicator";
+import { useState } from "react";
 
 const ProductItem = ({ product, quantity, ...props }) => {
 	const { token } = useSelector((state) => state.user);
 	const navigate = useNavigate();
 	const location = useLocation();
 	const isProductPage = location.pathname.includes("/product/");
-	const { data, isLoading, refetch } = useGetCartQuery();
+	const [cartUpdated, setCartUpdated] = useState({
+		action: "",
+		updated: false,
+		preposition: "",
+	});
 
 	// text transformation
 	let productDescription =
@@ -42,7 +47,11 @@ const ProductItem = ({ product, quantity, ...props }) => {
 		if (token) {
 			// if user is logged in add item to cart, validation to check if item in cart not made
 			await addProductToCart(Number(product.id));
-			refetch();
+			setCartUpdated({
+				action: "Added A",
+				preposition: "To",
+				updated: true,
+			});
 		} else {
 			// if guest is adding to cart, add to session storage, this data will be sent once use logs in or registers
 			if (window.sessionStorage.cart) {
@@ -75,7 +84,11 @@ const ProductItem = ({ product, quantity, ...props }) => {
 	const decreaseProductQuantityHandler = async () => {
 		if (token) {
 			await descreaseProductQuantity(Number(product.id));
-			refetch();
+			setCartUpdated({
+				action: "Removed A",
+				preposition: "From",
+				updated: true,
+			});
 		} else {
 			// if cart does not exist do nothing
 			if (!window.sessionStorage.cart) return;
@@ -197,6 +210,14 @@ const ProductItem = ({ product, quantity, ...props }) => {
 								justifyContent: "space-between",
 							}}
 						>
+							{/* Display The Popup Indicator If The Cart Is Updated */}
+							{cartUpdated.updated && (
+								<PopupIndicator
+									cartUpdated={cartUpdated}
+									message={`${cartUpdated.action} ${product.name} ${cartUpdated.preposition} The Cart`}
+								/>
+							)}
+
 							{/* Styling for the button name */}
 							<Box
 								onClick={navigateToProductPage}

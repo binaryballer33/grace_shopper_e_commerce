@@ -23,12 +23,8 @@ import {
 import { Loading, ProductItem } from "../../../components";
 import { getOrderTotal } from "../../../utils/helper_functions";
 import { Link } from "react-router-dom";
-import axios from "axios";
-import {
-	BACKEND_BASE_URL,
-	USER_CREDENTIALS,
-	getPurchaseConfirmationEmailRoute,
-} from "../../../utils/constant";
+import { USER_CREDENTIALS } from "../../../utils/constant";
+import { usePurchaseConfirmationEmailMutation } from "../../../api/email";
 
 const CartFailure = () => {
 	return (
@@ -173,7 +169,7 @@ const LoggedOutUserCart = ({
 const LoggedInUserCart = ({
 	removeProductFromCart,
 	cancelOrder,
-	// checkoutOrder,
+	sendPurchaseConfirmationEmail,
 }) => {
 	const { data, isLoading, refetch } = useGetCartQuery();
 	const theme = useTheme();
@@ -184,31 +180,33 @@ const LoggedInUserCart = ({
 	const productsInOrder = data?.order?.orderDetailsWithDescriptions;
 	const order = data?.order.order;
 
-	// go through the checkout process
-	const handleCheckout = async () => {
-		const response = await checkoutOrder(); // send the order to the server
-		window.location.href = response.data.checkoutUrl; // navigate to the checkout page
-
+	// send purchase confirmation email
+	const sendEmail = async () => {
 		// send purchase confirmation email
 		const { user } = JSON.parse(
 			window.sessionStorage.getItem(USER_CREDENTIALS)
 		);
 
-		// TODO: convert this into redux toolkit query later also make it work only after payment has been made
-		await axios.post(
-			`${BACKEND_BASE_URL}${getPurchaseConfirmationEmailRoute()}`,
-			{
-				from: "shaqmandy@resend.dev",
-				to: user.username,
-				subject: "Thank You For Your Purchase 🙂",
-				// create the email body, it takes a string of html
-				html: productsInOrder
-					.map((order) => {
-						return `<p>${order.quantity}X ${order.itemDescription.name}</p>`;
-					})
-					.join(""), // make the array into a string
-			}
-		);
+		// TODO: make it work only after payment has been made
+		const email = {
+			from: "shaqmandy@resend.dev",
+			to: user.username,
+			subject: "Thank You For Your Purchase 🙂",
+			html: productsInOrder // create the email body, it takes a string of html
+				.map((order) => {
+					return `<p>${order.quantity}X ${order.itemDescription.name}</p>`;
+				})
+				.join(""), // make the array into a string
+		};
+		await sendPurchaseConfirmationEmail(email);
+	};
+
+	// go through the checkout process
+	const handleCheckout = async () => {
+		const response = await checkoutOrder(); // send the order to the server
+		window.location.href = response.data.checkoutUrl; // navigate to the checkout page
+
+		if (response) sendEmail();
 	};
 
 	return (
@@ -315,6 +313,8 @@ const Cart = () => {
 	const [decreaseProductQuantity] = useDecreaseProductQuantityMutation();
 	const [removeProductFromCart] = useRemoveProductFromCartMutation();
 	const [cancelOrder] = useCancelOrderMutation();
+	const [sendPurchaseConfirmationEmail] =
+		usePurchaseConfirmationEmailMutation();
 
 	useEffect(() => {
 		const updateCart = () => {
@@ -370,6 +370,7 @@ const Cart = () => {
 		<LoggedInUserCart
 			removeProductFromCart={handleProductRemoval}
 			cancelOrder={handleCancelOrder}
+			sendPurchaseConfirmationEmail={sendPurchaseConfirmationEmail}
 		/>
 	) : (
 		<LoggedOutUserCart
